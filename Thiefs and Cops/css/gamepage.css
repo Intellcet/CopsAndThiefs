@@ -1,7 +1,6 @@
 body 
 {
     padding: 5px;
-    padding-top: 20px;
 }
 
 
@@ -11,6 +10,7 @@ body
   margin-bottom: 3px;
   background:#eee;
   width: auto;
+  height: 50vh;
 }
 
 .Players{
@@ -18,7 +18,7 @@ body
     background:#eee;
     margin-left: 10px;
     width: 95%;
-    height:260px;
+    height:40vh;
     overflow:auto;
 }
 
@@ -27,7 +27,7 @@ body
   border: 1px solid #fff;
   background:#eee;
   width: auto;
-  height: 300px;
+  height: 48vh;
 }
 
 #chat
@@ -42,7 +42,7 @@ body
     margin-left: 10px;
     margin-bottom: 10px;
     width: 95%;
-    height:183px;
+    height:31vh;
     overflow-x:hidden;
     overflow-y:auto;
 
@@ -54,7 +54,7 @@ body
 
     text-align: left;
     background: #eee;
-    height: auto;
+    height: 99.5vh;
     width: auto;
     overflow: auto;
     margin-bottom: 10px;
@@ -77,7 +77,7 @@ body
     background-color:#aaa;
     border: 1px solid black;
     height: 30px;
-    margin: 0px 20px;
+    margin: 20px;
     margin-top: 10px;
 }
 #actions
@@ -93,8 +93,6 @@ body
     margin-left: 8%;
     overflow: hidden;
     text-overflow: ellipsis;
-
-
 }
 
 #input {
