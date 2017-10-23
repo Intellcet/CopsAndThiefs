@@ -1,0 +1,104 @@
+body 
+{
+    padding: 5px;
+    padding-top: 20px;
+}
+
+
+.WhoInRoom
+{
+  text-align:left;
+  margin-bottom: 3px;
+  background:#eee;
+  width: auto;
+}
+
+.Players{
+    text-align:left;
+    background:#eee;
+    margin-left: 10px;
+    width: 95%;
+    height:260px;
+    overflow:auto;
+}
+
+.Chat{
+  text-align:left;
+  border: 1px solid #fff;
+  background:#eee;
+  width: auto;
+  height: 300px;
+}
+
+#chat
+{
+  padding:0px;
+}
+
+#letters
+{
+    text-align:left;
+    float: left;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    width: 95%;
+    height:183px;
+    overflow-x:hidden;
+    overflow-y:auto;
+
+
+}
+
+#game
+{
+
+    text-align: left;
+    background: #eee;
+    height: auto;
+    width: auto;
+    overflow: auto;
+    margin-bottom: 10px;
+}
+.screen
+{
+    background-color:#aaa;
+    border: 5px solid black;
+    max-height: 80%
+}
+#command
+{
+    margin-top: 3px;
+    height: 20px;
+    width: 100%;
+}
+#statBar
+{
+    margin-top: 5px;
+    background-color:#aaa;
+    border: 1px solid black;
+    height: 30px;
+    margin: 0px 20px;
+    margin-top: 10px;
+}
+#actions
+{
+    margin-top: 25px;
+    margin-bottom: 25px;
+    
+}
+
+.action-buttons {
+    margin-bottom: 20px;
+    width: 15%;
+    margin-left: 8%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+
+}
+
+#input {
+    min-width: 80%;
+    margin: 10px;
+}
+

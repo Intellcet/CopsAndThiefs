@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="js/gamePage.js" type="text/javascript"></script>
+    <link href="css\gamepage.css" rel="stylesheet" media="screen" />
+</head>
+<body onload="fillStatBar();">
+
+
+
+    <div class="col-md-3">
+        <div class="container-fluid">
+            <div class="WhoInRoom">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Кто в комнате:</h3>
+                    </div>
+                </div>
+                <div class="Players">
+                    <div id="room" class="panel-body" style="margin-top: 1px; max-height: 300px; width: 100%">
+                        <p style="margin-bottom: 5px; margin-top: 0px">
+                            <button type="button" onclick="addPpl(Array({login:'Petya'}, {login:'Vasya'}));">Tyta ludi</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="Chat">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Чатик</h3>
+                    </div>
+                </div>
+                <div class="chatBox">
+                    <div id="chat">
+                        <div id="letters"> </div>
+                        <div class="input-group" id="input">
+                            <input type="text" id="chatting" class="form-control" placeholder="Пишите сюда" aria-label="Пишите сюда">
+                            <span class="input-group-btn">
+                                <button class="btn btn-secondary" type="button" onclick="send({login:'Vasya'});">Send</button>
+                                </span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div class="col-md-9">
+        <div class="container-fluid">
+            <div id="game">
+                <div class="panel panel-default" style="margin: 0px">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Game</h3>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="screen"><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/></div>
+                    <div>
+                        <input id="command" placeholder=": >Вводим команды(подтверждение/выбор)"/ onkeyup="command();">
+                    </div>
+                </div>
+                <div id="statBar">
+                    <table id="tbl" class="table table-md">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="actions" class="container-fluid">
+                    <button  type="button" class="btn btn-secondary action-buttons"   onclick="move();"> Перемещение </button>
+                    <button  type="button" class="btn btn-secondary action-buttons"   onclick="giveaway();"> Скинуть деньги в общак </button>
+                    <button  type="button" class="btn btn-secondary action-buttons"   onclick="classFuncOne();"> Классовая функция </button>
+                    <button  type="button" class="btn btn-secondary action-buttons"   onclick="classFuncTwo();"> Классовая функция </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+</html>
