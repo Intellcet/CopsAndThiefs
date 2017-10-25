@@ -1,24 +1,44 @@
-﻿function Intercation(players, player) {
+﻿function Interaction(players, player) {
 
     this.ppl = players;
     this.player = player;
+
+    this.getletters = function() {
+        //получаем письма с серва и сохраняем их
+        //...
+        var mail = letters;
+        return mail;
+    }
+
+    this.writeletters = function (letters) {
+        var mail = letters;
+        for(var i = 0; i < mail.length; i++) {
+            var elem = '<p style="margin-bottom: 5px;">' + mail[i].name + ': ' + mail[i].letter + '</p>';
+        }
+    }
+
+    this.giveletter = function (mail) {
+        var letter = mail;
+        //отправляем на серв
+        // 
+    }
+
+
     //добавление игроков в чат
     this.addPpl = function () {
         for(var i = 0; i < this.ppl.length; i++) {
-            var elem = '<p style="margin-bottom: 5px;">' + this.ppl[i].login + '</p>';
+            var elem = '<p style="margin-bottom: 5px;">' + this.ppl[i].name + '</p>';
             $("#room").append(elem);
         }
     }
-    //отправить письмо на серв; вывод писем в чат
-    this.send = function () {
-        //получаем письма с серва
-        //...
-        var letter = $("#chatting").val(); //сохраняем письмо
+    
+    //вывод, написанного письма, в чат
+    this.send = function (letter) {
+        var mail = letter;
         //выводим его в чат
-        var elem = '<p style="margin-bottom: 5px;">' + this.player.login + ': ' + letter + '</p>';
-        $("#letters").append(elem);
-        //отправляем на серв
-        // 
+        var elem = '<p style="margin-bottom: 5px;">' + mail.name + ': ' + mail.letter + '</p>';
+        $("#letters").append(elem)
+        
     }
     //взаимодействия с кнопками
     this.command = function () {
@@ -62,14 +82,32 @@
 }
 
 window.onload = function () {
-    var inter = new Intercation(Array({ login: 'Petya' }, { login: 'Vasya' }), { login: 'Vasya' });
+    var inter = new Interaction(Array({ name: 'Petya' }, { name: 'Vasya' }), { name: 'Vasya' });
+    
+    //функции в интервал(?)
+    var letters = inter.getletters();//получаем письма с сервака и запоминаем их
+    inter.writeletters(letters);//выносим письма, полученные с серва на экран
+    ///////////////////////
+    var player = inter.player.name;
+    
+
     inter.fillStatBar();
-    $("#command").on('keypress', function (event) { inter.command(); });
-    $("#btn1").on('click', function (event) { inter.addPpl();        });
-    $("#btn2").on('click', function (event) { inter.send()           });
-    $("#btn3").on('click', function (event) { inter.move();          });
-    $("#btn4").on('click', function (event) { inter.giveaway();      });
-    $("#btn5").on('click', function (event) { inter.classFuncOne();  });
-    $("#btn6").on('click', function (event) { inter.classFuncTwo();  });
+    $("#command").on('keypress', function (event)   { inter.command();      });
+    $("#checkPpl").on('click', function (event)     { inter.addPpl();       });
+    $("#send").on('click', function (event) {
+        var mail = {
+            name: player,
+            letter: $("#chatting").val(),
+        };
+        if (mail.letter != '') {
+            inter.send(mail); //выводим написанное письмо на экран
+            inter.giveletter(mail);  //отправляет его на серв
+            $("#chatting").val("");
+        } 
+    });
+    $("#moves").on('click', function (event)     { inter.move();         });
+    $("#giveaway").on('click', function (event) { inter.giveaway(); });
+    $("#classFuncOne").on('click', function (event) { inter.classFuncOne(); });
+    $("#classFuncTwo").on('click', function (event) { inter.classFuncTwo(); });
 
 }
