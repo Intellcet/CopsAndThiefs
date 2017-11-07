@@ -1,6 +1,6 @@
 ﻿<?php
 
-    define("MODULES", ROOT . 'modules' . DS);
+    define("MODULES", ROOT . 'Modules' . DS);
     require_once (MODULES . 'mediator' . DS . 'mediator.php');
     require_once (MODULES . 'Auth' . DS . 'auth.php');
     require_once (MODULES . 'DataBase' . DS . 'db.php');
@@ -18,9 +18,7 @@
             $this->mediator = new Mediator();
             $this->db = new DB($this->mediator);
             $this->auth = new Auth($this->mediator);
+            //var_dump($this->db->getMessage(2));
             //var_dump($this->db->sendMessage(2, 'dsa', date('Y-n-j H:i:s')));
-        }
-
-        private function f1(){
         }
     }

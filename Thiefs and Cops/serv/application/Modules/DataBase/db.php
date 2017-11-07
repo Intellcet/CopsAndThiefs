@@ -31,6 +31,19 @@
             mysqli_close($this->host);
         }
 
+        private function isUniqUser($login) {//проверка уникальности пользователя по логину
+            $query = "SELECT * " . "FROM user " . "WHERE login='" . $login . "'";
+            $result = mysqli_query($this->host, $query);
+            $res = null;
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row;
+            }
+            if ($res != null) {
+                return false;
+            }
+            return true;
+        }
+
 
         public function getUser($login, $password) {//получаем пользователя
             $query = "SELECT * " . "FROM user " . "WHERE login='" . $login . "' AND password='" . $password . "'";
@@ -50,33 +63,37 @@
         }
 
         public function setUser($login, $password, $nickname) {//добавляем в бд пользователя
-            $query = "INSERT INTO user (login, password, nickname) VALUES ('" . $login . "', '" . $password . "', '" . $nickname . "')";
-            $result = mysqli_query($this->host, $query);
-            $res = null;
-            while ($row = mysqli_fetch_object($result)) {
-                $res = $row;
-                break;
+            if ($this->isUniqUser($login)) {//если пользователь уникален (проверка по логину)
+                $query = "INSERT INTO user (login, password, nickname) VALUES ('" . $login . "', '" . $password . "', '" . $nickname . "')";
+                $result = mysqli_query($this->host, $query);
+                $res = null;
+                while ($row = mysqli_fetch_object($result)) {
+                    $res = $row;
+                    break;
+                }
+                return true;
             }
-            return true;
+            return false;
         }
+
         public function getMessage($id_user) {//получаем письма
             $query = "SELECT * " . "FROM message " . "WHERE id_user='" . $id_user ."'";
             $result = mysqli_query($this->host, $query);
-            $res = null;
+            $res = Array();
             while ($row = mysqli_fetch_object($result)) {
-                for ($i = 0; $i < 2; $i++)
-                    $res[] = $row;
-                break;
+                $res[] = $row;
             }
             return $res;
         }
+
         public function sendMessage($id_user, $text, $data_time) {//отправляем в бд письмо
             $query = "INSERT INTO message (id_user, text, date_time) VALUES ('" . $id_user . "', '" . $text . "', '" . $data_time . "')";
             mysqli_query($this->host, $query);
             return true;
         }
-        public function getItem($type, $name){//получаем артефакт
-            $query = "SELECT * " . "FROM item " . "WHERE type='" . $type . "' AND name='" . $name . "'";
+
+        public function getItemUser($id_user, $type, $name){//получаем артефакт пользователя
+            $query = "SELECT * " . "FROM item " . "WHERE id_user='" . $id_user . "'AND type='" . $type . "' AND name='" . $name . "'";
             $result = mysqli_query($this->host, $query);
             $res = null;
             while ($row = mysqli_fetch_object($result)) {
@@ -85,11 +102,33 @@
             }
             return $res;
         }
+
+        public function getItemsUser($id_user){//получаем все артефакты пользователя
+            $query = "SELECT * " . "FROM item " . "WHERE id_user='" . $id_user . "'";
+            $result = mysqli_query($this->host, $query);
+            $res = Array();
+            while ($row = mysqli_fetch_object($result)) {
+                $res[] = $row;
+            }
+            return $res;
+        }
+
+        public function getItemsRoom($id_room){//получаем все артефакты в комнате
+            $query = "SELECT * " . "FROM item " . "WHERE id_user='" . $id_room . "'";
+            $result = mysqli_query($this->host, $query);
+            $res = Array();
+            while ($row = mysqli_fetch_object($result)) {
+                $res[] = $row;
+            }
+            return $res;
+        }
+
         public function setItem($id_room, $type, $cost, $name){//создаем артефакт
             $query = "INSERT INTO item (id_room, form, cost, title) VALUES ('" . $id_room . "', '" . $type . "', '" . $cost . "', '" . $name . "')";
             mysqli_query($this->host, $query);
             return true;
         }
+
         public function getRoom($id){//получаем комнату
             $query = "SELECT * " . "FROM room " . "WHERE id='" . $id . "'";
             $result = mysqli_query($this->host, $query);
@@ -100,6 +139,7 @@
             }
             return $res;
         }
+
         public function updateDescriptionRoom($id, $description){//обновляем описание комнаты
             if ($description){
                 $query = "UPDATE room SET description='". $description ."' WHERE id='". $id ."'";
@@ -108,6 +148,7 @@
             }
             return false;
         }
+
         public function setRoom($name, $description = null){//создаем новую комнату
             if ($name){
                 $query = "INSERT INTO room (name, description) VALUES ('" . $name . "', '" . $description . "')";
@@ -116,15 +157,16 @@
             }
             return false;
         }
+
         public function getWay($id_from, $id_to) {//получаем путь
-         $query = "SELECT * " . "FROM way " . "WHERE id_from='" . $id_from . "' AND id_to='". $id_to ."'";
-         $result = mysqli_query($this->host, $query);
-         $res = null;
-         while ($row = mysqli_fetch_object($result)) {
-             $res = $row;
-             break;
-         }
-         return $res;
+             $query = "SELECT * " . "FROM way " . "WHERE id_from='" . $id_from . "' AND id_to='". $id_to ."'";
+             $result = mysqli_query($this->host, $query);
+             $res = null;
+             while ($row = mysqli_fetch_object($result)) {
+                 $res = $row;
+                 break;
+             }
+             return $res;
         }
 
         public function setWay($id_from, $id_to) {//создаем новый путь
@@ -146,11 +188,30 @@
             return $res;
         }
 
+        public function getPlayersFromRoom($id_room) {//получить всех игроков из комнаты
+            $query = "SELECT * " . "FROM player " . "WHERE id='" . $id_room . "'";
+            $result = mysqli_query($this->host, $query);
+            $res = Array();
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row;
+            }
+            return $res;
+        }
+
         public function setPlayer($id_user, $type, $status = 'alive', $live = 1){//добавляем нового игрока
             if ($id_user && $type) {
                 $query = "INSERT INTO player (id_user, type, status, live) VALUES ('" . $id_user . "', '" . $type . "', '" . $status . "', '" . $live . "')";
                 mysqli_query($this->host, $query);
                 return true;
             }
+        }
+
+        public function changePlayer($id_user, $type) {
+            if ($type === "thief" || $type === "cop") {
+                $query = "UPDATE player SET type='". $type ."' WHERE id_user='". $id_user ."'";
+                mysqli_query($this->host, $query);
+                return true;
+            }
+            return false;
         }
     }
