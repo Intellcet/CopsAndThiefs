@@ -36,10 +36,9 @@
             $result = mysqli_query($this->host, $query);
             $res = null;
             while ($row = mysqli_fetch_object($result)) {
-                $res = $row;
-            }
-            if ($res != null) {
-                return false;
+                if ($row){
+                    return false;
+                }
             }
             return true;
         }
@@ -65,19 +64,14 @@
         public function setUser($login, $password, $nickname) {//добавляем в бд пользователя
             if ($this->isUniqUser($login)) {//если пользователь уникален (проверка по логину)
                 $query = "INSERT INTO user (login, password, nickname) VALUES ('" . $login . "', '" . $password . "', '" . $nickname . "')";
-                $result = mysqli_query($this->host, $query);
-                $res = null;
-                while ($row = mysqli_fetch_object($result)) {
-                    $res = $row;
-                    break;
-                }
+                mysqli_query($this->host, $query);
                 return true;
             }
             return false;
         }
 
-        public function getMessage($id_user) {//получаем письма
-            $query = "SELECT * " . "FROM message " . "WHERE id_user='" . $id_user ."'";
+        public function getMessages($count, $offset) {//получаем письма
+            $query = "SELECT * " . "FROM message " . " LIMIT " . $count . " OFFSET " .  $offset;
             $result = mysqli_query($this->host, $query);
             $res = Array();
             while ($row = mysqli_fetch_object($result)) {
@@ -86,8 +80,8 @@
             return $res;
         }
 
-        public function sendMessage($id_user, $text, $data_time) {//отправляем в бд письмо
-            $query = "INSERT INTO message (id_user, text, date_time) VALUES ('" . $id_user . "', '" . $text . "', '" . $data_time . "')";
+        public function sendMessage($id_user, $text) {//отправляем в бд письмо
+            $query = "INSERT INTO message (id_user, text, date_time) VALUES ('" . $id_user . "', '" . $text . "', NOW())";
             mysqli_query($this->host, $query);
             return true;
         }

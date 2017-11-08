@@ -18,7 +18,7 @@
             $this->mediator = new Mediator();
             $this->db = new DB($this->mediator);
             $this->auth = new Auth($this->mediator);
-            //var_dump($this->db->getMessage(2));
-            //var_dump($this->db->sendMessage(2, 'dsa', date('Y-n-j H:i:s')));
+            //var_dump($this->db->getMessages(1, 0));
+            //var_dump($this->db->sendMessage(1, 'Vasya lox'));
         }
     }
