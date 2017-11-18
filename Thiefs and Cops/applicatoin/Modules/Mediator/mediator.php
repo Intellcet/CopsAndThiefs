@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
     class Trigger {
         public function __call($method, $args) {
@@ -17,7 +17,7 @@
         private $EVENT;
 
         function __construct() {
-           //определить тиаы тригероов
+           //определить типы тригероов
             $this->TRIGGER_TYPES = new stdClass();
             $this->TRIGGER_TYPES->GET_USER     = 'GET_USER';
             $this->TRIGGER_TYPES->GET_LOCATION = 'GET_LOCATION';

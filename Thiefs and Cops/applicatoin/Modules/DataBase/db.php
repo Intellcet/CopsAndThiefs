@@ -1,31 +1,23 @@
-﻿<?php
+<?php
 
-    require_once(MODULES . 'baseModule.php');
-
-    class DB extends BaseModule {
+	class DB {
 
         private $url = 'localhost';
         private $user = 'root';
         private $password = '';
+		private $dbName = 'copsandthiefs';
 
         private $host;
         private $db;
 
-
-        function __construct($mediator) {
-            parent::__construct($mediator);
-            /*$type = $this->mediator->getTriggerTypes();
-            $this->mediator->registerTrigger($type->GET_USER , function($param) {
-                $user = Array('login' => $param['login'], 'pass' => $param['pass']);
-                return $user;
-            });
-            $this->mediator->registerTrigger($type->SET_TOKEN, function($param) { return $param; });*/
+        function __construct() {
+			// подключить БД
             $this->host = mysqli_connect($this->url, $this->user, $this->password);
             if (!$this->host) {
                 die('Ошибка соединения: ' . mysqli_error());
             }
-            $this->db = mysqli_select_db($this->host, 'copsandthiefs');
-        }
+            $this->db = mysqli_select_db($this->host, $this->dbName);
+		}
 
         function __destruct() {
             mysqli_close($this->host);
@@ -43,7 +35,6 @@
             return true;
         }
 
-
         public function getUser($login, $password) {//получаем пользователя
             $query = "SELECT * " . "FROM user " . "WHERE login='" . $login . "' AND password='" . $password . "'";
             $result = mysqli_query($this->host, $query);
@@ -54,6 +45,28 @@
             }
             return $res;
         }
+
+        public function getUserByID($id){
+            $query = "SELECT * " . "FROM user " . "WHERE id='" . $id . "'";
+            $result = mysqli_query($this->host, $query);
+            $res = null;
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row;
+                break;
+            }
+            return $res;
+        }
+		
+		public function getUserByToken($token) {
+            $query = "SELECT * " . "FROM user " . "WHERE token='" . $token . "'";
+            $result = mysqli_query($this->host, $query);
+            $res = null;
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row;
+                break;
+            }
+            return $res;
+		}
 
         public function updateUserToken($id, $token) {//обновляем токен пользователя
             $query = "UPDATE user SET token = '" . $token . "' WHERE id=" . $id;
@@ -134,6 +147,17 @@
             return $res;
         }
 
+        public function getRoomByName($name){
+            $query = "SELECT * " . "FROM room " . "WHERE name='" . $name . "'";
+            $result = mysqli_query($this->host, $query);
+            $res = null;
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row;
+                break;
+            }
+            return $res;
+        }
+
         public function updateDescriptionRoom($id, $description){//обновляем описание комнаты
             if ($description){
                 $query = "UPDATE room SET description='". $description ."' WHERE id='". $id ."'";
@@ -183,11 +207,11 @@
         }
 
         public function getPlayersFromRoom($id_room) {//получить всех игроков из комнаты
-            $query = "SELECT * " . "FROM player " . "WHERE id='" . $id_room . "'";
+            $query = "SELECT * " . "FROM player " . "WHERE id_room='" . $id_room . "'";
             $result = mysqli_query($this->host, $query);
             $res = Array();
             while ($row = mysqli_fetch_object($result)) {
-                $res = $row;
+                $res[] = $row;
             }
             return $res;
         }
@@ -198,9 +222,19 @@
                 mysqli_query($this->host, $query);
                 return true;
             }
+            return false;
         }
 
-        public function changePlayer($id_user, $type) {
+        public function setPlayerToRoom($id_user, $id_room){//добавляем игрока в комнату
+            if ($id_user) {
+                $query = "UPDATE player SET id_room='". $id_room ."' WHERE id_user='". $id_user ."'";
+                mysqli_query($this->host, $query);
+                return true;
+            }
+            return false;
+        }
+
+        public function changePlayer($id_user, $type) {//изменяем игрока
             if ($type === "thief" || $type === "cop") {
                 $query = "UPDATE player SET type='". $type ."' WHERE id_user='". $id_user ."'";
                 mysqli_query($this->host, $query);
@@ -208,4 +242,45 @@
             }
             return false;
         }
+
+        public function setRang($id_user, $rang){//обновляем ранг игрока
+            if ($id_user) {
+                $query = "UPDATE player SET rang='". $rang ."' WHERE id_user='". $id_user ."'";
+                mysqli_query($this->host, $query);
+                return true;
+            }
+            return false;
+        }
+
+        public function getRang($id_user){//получаем ранг
+            $query = "SELECT rang " . "FROM player " . "WHERE id_user='" . $id_user . "'";
+            $result = mysqli_query($this->host, $query);
+            $res = null;
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row->rang;
+                break;
+            }
+            return $res;
+        }
+
+        public function setMoney($id_user, $money){//обновляем деньги
+            if ($id_user) {
+                $query = "UPDATE player SET money='". $money ."' WHERE id_user='". $id_user ."'";
+                mysqli_query($this->host, $query);
+                return true;
+            }
+            return false;
+        }
+
+        public function getMoney($id_user){//получаем деньги
+            $query = "SELECT money " . "FROM player " . "WHERE id_user='" . $id_user . "'";
+            $result = mysqli_query($this->host, $query);
+            $res = null;
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row->money;
+                break;
+            }
+            return $res;
+        }
+
     }

@@ -73,26 +73,15 @@ body
 }
 #statBar
 {
-    margin-top: 5px;
     background-color:#aaa;
     border: 1px solid black;
     height: 30px;
-    margin: 20px;
-    margin-top: 10px;
 }
 #actions
 {
-    margin-top: 25px;
-    margin-bottom: 25px;
-    
-}
-
-.action-buttons {
-    margin-bottom: 20px;
-    width: 15%;
-    margin-left: 8%;
     overflow: hidden;
     text-overflow: ellipsis;
+    
 }
 
 #input {
