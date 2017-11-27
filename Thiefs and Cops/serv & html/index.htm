@@ -7,11 +7,12 @@
     <link href="css/gamepage.css" rel="stylesheet" type="text/css" />
     <link href="css/signin.css" rel="stylesheet" type="text/css" />
 
-    <script src="js/vender/jquery-3.2.1.js" type="text/javascript"></script>
-    <script src="js/vender/bootstrap.min.js" type="text/javascript"></script>
+    <script src="js/vendor/jquery-3.2.1.js" type="text/javascript"></script>
+    <script src="js/vendor/bootstrap.min.js" type="text/javascript"></script>
     <script src="js/server/server.js" type="text/javascript"></script>
     <script src="js/auth/auth.js" type="text/javascript"></script>
     <script src="js/game/game.js" type="text/javascript"></script>
+    <script src="js/chat/chat.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
 </head>
 <body>
@@ -73,16 +74,30 @@
                     </div>
                     <div id="statBar" style="margin-left: 5px; margin-right: 5px; margin-bottom: 0px; margin-top: 5px;">
                         <table id="tbl" class="table table-md">
-                            <tbody>
+                            <tbody id="bodytbl">
                             </tbody>
                         </table>
                     </div>
-                    <div id="actions" class="container-fluid" style="margin-bottom: 0px; margin-top: 5px;">
-                        <input id="moves" type="button" class="btn btn-secondary action-buttons"  value="Перемещение" />
+                    <div id="thief" class="actions container-fluid" style="margin-bottom: 0px; margin-top: 5px;">
+                        <input id="movesThief" type="button" class="btn btn-secondary action-buttons"  value="Перейти" />
                         <input id="giveaway" type="button" class="btn btn-secondary action-buttons"     value="Скинуть деньги в общак" />
-                        <input id="classFuncOne" type="button" class="btn btn-secondary action-buttons" value="Классовая функция" />
-                        <input id="classFuncTwo" type="button" class="btn btn-secondary action-buttons" value="Классовая функция" />
-                        <input id="logout" type="button" class="btn btn-secondary action-buttons" value="Выход" />
+                        <input id="steal" type="button" class="btn btn-secondary action-buttons" value="Украсть" />
+                        <input id="search" type="button" class="btn btn-secondary action-buttons" value="Прошарить комнату" />
+                        <input id="lawyer" type="button" class="btn btn-secondary action-buttons" value="Вызвать адвоката" />
+                        <input id="logoutThief" type="button" class="btn btn-secondary action-buttons" value="Выход" />
+                    </div>
+                    <div id="cop" class="actions container-fluid" style="margin-bottom: 0px; margin-top: 5px;">
+                        <input id="movesCop" type="button" class="btn btn-secondary action-buttons" value="Перейти" />
+                        <input id="payTax" type="button" class="btn btn-secondary action-buttons" value="Заплатить налоги" />
+                        <input id="inspect" type="button" class="btn btn-secondary action-buttons" value="Осмотреться" />
+                        <input id="grieve" type="button" class="btn btn-secondary action-buttons" value="Пожопить" />
+                        <input id="logoutCop" type="button" class="btn btn-secondary action-buttons" value="Выход" />
+                    </div>
+                    <div id="human" class="actions container-fluid" style="margin-bottom: 0px; margin-top: 5px;">
+                        <input id="suffer" type="button" class="btn btn-secondary action-buttons" value="Потерпеть" />
+                        <input id="sufferBit" type="button" class="btn btn-secondary action-buttons" value="Потерпеть немного" />
+                        <input id="sufferMore" type="button" class="btn btn-secondary action-buttons" value="Потерпеть еще чуть-чуть" />
+                        <input id="logoutHuman" type="button" class="btn btn-secondary action-buttons" value="Выход" />
                     </div>
                 </div>
             </div>

@@ -30,6 +30,12 @@ body
   height: 48vh;
 }
 
+.actions
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 #chat
 {
   padding:0px;
@@ -76,12 +82,6 @@ body
     background-color:#aaa;
     border: 1px solid black;
     height: 30px;
-}
-#actions
-{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    
 }
 
 #input {

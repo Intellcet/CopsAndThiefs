@@ -2,7 +2,6 @@
 
     var server = options.server;
     var loginSuccess = (options && options.callbacks && options.callbacks.login instanceof Function) ? options.callbacks.login : function () { };
-    var token;
 
     function showAuth() {
         $('#validation').show();
@@ -18,10 +17,9 @@
         return token;
     };
 
-    this.logout = function (token) {
-        server.logout(token).done(function (data) {
+    this.logout = function () {
+        server.logout().done(function (data) {
             if(data) {
-                token = null;
                 showAuth();
             }
         });
@@ -37,16 +35,17 @@
             var pass = $('#pass').val();
             if(login && pass) {
                 server.login(login, pass).done(function (data) {
-                    if(data && data.token) {
-                        token = data.token;
+                    if (data.token != false) {
                         showGame();
-                        loginSuccess(token);
-                    } 
+                        loginSuccess(data.token);
+                    } else {
+                        alert('pass or log');
+                    }
                 });     
                 $('#login').val('');
                 $('#pass').val('');
             } else {
-                alert('pass or log')
+                alert('pass or log');
             }
         });
     }

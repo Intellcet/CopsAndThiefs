@@ -1,14 +1,13 @@
 <?php
 
     define("MODULES", ROOT . 'Modules' . DS);
-    require_once (MODULES . 'mediator' . DS . 'mediator.php');
     require_once (MODULES . 'Auth' . DS . 'auth.php');
     require_once (MODULES . 'Game' . DS . 'game.php');
-    require_once (MODULES . 'DataBase' . DS . 'db.php');
+    require_once (MODULES . 'Chat' . DS . 'chat.php');
+	require_once (MODULES . 'DataBase' . DS . 'db.php');
 
     class Application {
 
-        private $mediator;
         private $db;
         private $auth;
         private $game;
@@ -79,11 +78,37 @@
             }
             return false;
         }
+        //giveaway money
+        private function giveMoneyMethod($param) {
+            if ($param['token'] && $param['money']){
+                return $this->game->giveMoney($param['token'], $param['money']);
+            }
+            return false;
+        }
+		
+		private function setMessageMethod($param) {//отправить письмо
+			if ($param['token'] && $param['text']) {
+				return $this->chat->setMessage($param['token'], $param['text']);
+			}
+			return false;
+		}
+		private function getMessagesMethod($param) {//получить письма
+			if ($param['token']) {
+				return $this->chat->getMessages($param['token'], $param['count'], $param['offset']);
+			}
+			return false;
+		}
+
+		private function actionMethod($param) {//совершить действие
+            if ($param['token']) {
+                return $this->game->action($param['token'], $param['action'], $param['money'], $param['nickname']);
+            }
+        }
 
         function __construct(){
-            $this->mediator = new Mediator();
             $this->db = new DB();
             $this->auth = new Auth($this->db);
             $this->game = new Data($this->db);
+			$this->chat = new Chat($this->db);
         }
     }
