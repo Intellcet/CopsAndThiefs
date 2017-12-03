@@ -148,7 +148,7 @@
         }
 
         public function getRoom($id){//получаем комнату
-            $query = "SELECT * " . "FROM room " . "WHERE id=" . $id . "";
+            $query = "SELECT * " . "FROM room " . "WHERE id=" . $id;
             $result = mysqli_query($this->host, $query);
             $res = null;
             while ($row = mysqli_fetch_object($result)) {
@@ -256,9 +256,9 @@
             return false;
         }
 
-        public function setPlayerToRoom($id_user, $id_room){//добавляем игрока в комнату
-            if ($id_user) {
-                $query = "UPDATE player SET id_room=". $id_room ." WHERE id_user=". $id_user ."";
+        public function setPlayerToRoom($id, $id_room){//добавляем игрока в комнату
+            if ($id) {
+                $query = "UPDATE player SET id_room=". $id_room ." WHERE id=". $id ."";
                 mysqli_query($this->host, $query);
                 return true;
             }
@@ -274,17 +274,17 @@
             return false;
         }
 
-        public function setRang($id_user, $rang){//обновляем ранг игрока
-            if ($id_user) {
-                $query = "UPDATE player SET rang='". $rang ."' WHERE id_user=". $id_user ."";
+        public function setRang($id, $rang){//обновляем ранг игрока
+            if ($id) {
+                $query = "UPDATE player SET rang='". $rang ."' WHERE id=". $id ."";
                 mysqli_query($this->host, $query);
                 return true;
             }
             return false;
         }
 
-        public function getRang($id_user){//получаем ранг
-            $query = "SELECT rang " . "FROM player " . "WHERE id_user=" . $id_user . "";
+        public function getRang($id){//получаем ранг
+            $query = "SELECT rang " . "FROM player " . "WHERE id=" . $id . "";
             $result = mysqli_query($this->host, $query);
             $res = null;
             while ($row = mysqli_fetch_object($result)) {
@@ -294,17 +294,37 @@
             return $res;
         }
 
-        public function setMoney($id_player, $money){//обновляем деньги
-            if ($id_player) {
-                $query = "UPDATE player SET money=". $money ." WHERE id=". $id_player ."";
+        public function getExp($id) {//получение exp
+            $query = "SELECT exp " . "FROM player " . "WHERE id=" . $id . "";
+            $result = mysqli_query($this->host, $query);
+            $res = null;
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row->exp;
+                break;
+            }
+            return $res;
+        }
+
+        public function setExp($id, $exp) {//установка exp
+            if ($id) {
+                $query = "UPDATE player SET exp='". $exp ."' WHERE id=". $id ."";
                 mysqli_query($this->host, $query);
                 return true;
             }
             return false;
         }
 
-        public function getMoney($id_player){//получаем деньги
-            $query = "SELECT money " . "FROM player " . "WHERE id=" . $id_player . "";
+        public function setMoney($id, $money){//обновляем деньги
+            if ($id) {
+                $query = "UPDATE player SET money=". $money ." WHERE id=". $id ."";
+                mysqli_query($this->host, $query);
+                return true;
+            }
+            return false;
+        }
+
+        public function getMoney($id){//получаем деньги
+            $query = "SELECT money " . "FROM player " . "WHERE id=" . $id . "";
             $result = mysqli_query($this->host, $query);
             $res = null;
             while ($row = mysqli_fetch_object($result)) {
@@ -313,5 +333,42 @@
             }
             return $res;
         }
+		
+		// SELECT * FROM `message` WHERE date_time < FROM_UNIXTIME(UNIX_TIMESTAMP() - 60*60*24*10)
+		// 60 - 1 min
+		// 60 - 1 hour
+		// 24 - 1 day
+		// 10 - days count
+		
+		public function setAction($id_player, $id_target = null, $type, $value = null) {//добавить действие
+            $query = "INSERT INTO `action` (id_player, id_target, `type`, `value`, date_time) VALUES (" . $id_player . ", " . (($id_target) ? $id_target : "null") . ", '" . $type . "', '" . (($value) ? $value : "null") . "',  NOW())";
+            return mysqli_query($this->host, $query);
+        }
 
+		public function getAction($id) {//получить действие
+            $query = "SELECT * " . "FROM action " . "WHERE id=" . $id;
+            $result = mysqli_query($this->host, $query);
+            $res = null;
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row;
+                break;
+            }
+            return $res;
+        }
+
+		public function getActions($id_player) {//получить все действия игрока
+            $query = "SELECT * " . "FROM action " . "WHERE id_player=" . $id_player;
+            $result = mysqli_query($this->host, $query);
+            $res = Array();
+            while ($row = mysqli_fetch_object($result)) {
+                $res[] = $row;
+            }
+            return $res;
+        }
+
+		public function delAction($id) { //удалить действие
+            $query = "DELETE " . " FROM action " . " WHERE id=" . $id;
+            mysqli_query($this->host, $query);
+            return true;
+        }
     }

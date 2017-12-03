@@ -75,6 +75,7 @@
         server.toRoom(name_room).done(function (data) {
             if (data) {
                 getRoom(data.id);
+                $('#command').val("");
             }
         });
     }
@@ -85,7 +86,7 @@
             server.action('giveaway', money).done(function (data) {
                 if (data) {
                     $('#bodytbl').html("");
-                    var row = "<tr><th>" + nickname + "</th> <th>" + data.rang + "</th> <th>" + data.money + "</th> </tr>";
+                    var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + data.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.exp + "</th> <th>" + "money: " + data.money + "</th> </tr>";
                     $("#bodytbl").html(row);
                     $('#command').val("");
                 }
@@ -97,10 +98,9 @@
         var nickname = $('#command').val();
         if (nickname) {
             server.action('steal', null, nickname).done(function (data) {
-                console.log(data);
                 if (data) {
                     $('#bodytbl').html("");
-                    var row = "<tr><th>" + nickname + "</th> <th>" + data.rang + "</th> <th>" + data.money + "</th> </tr>";
+                    var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + data.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.exp + "</th> <th>" + "money: " + data.money + "</th> </tr>";
                     $("#bodytbl").html(row);
                     $('#command').val("");
                 }
@@ -112,7 +112,7 @@
         server.action('search').done(function (data) {
             if (data) {
                 $('#bodytbl').html("");
-                var row = "<tr><th>" + nickname + "</th> <th>" + data.rang + "</th> <th>" + data.money + "</th> </tr>";
+                var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + data.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.exp + "</th> <th>" + "money: " + data.money + "</th> </tr>";
                 $("#bodytbl").html(row);
                 $('#command').val("");
             }
@@ -160,43 +160,21 @@
     function actionHandler(type) {//обработчик действий
         switch (type) {
             case "thief":
-                $('#movesThief').on('click', function (event) {//вешаем событие на кнопку "перейти"
-                    toRoom();
-                });
-                $('#giveaway').on('click', function (event) {//вешаем событие на кнопку "сдать в общак"
-                    giveMoney();
-                });
-                $('#steal').on('click', function (event) {
-                    steal();
-                });
-                $('#search').on('click', function (event) {
-                    search();
-                });
-                $('#lawyer').on('click', function (event) {
-                    lawyer();
-                });
+                $('#movesThief').on('click', toRoom);
+                $('#giveaway').on('click', giveMoney);
+                $('#steal').on('click', steal);
+                $('#search').on('click', search);
+                $('#lawyer').on('click', lawyer);
                 break;
             case "cop":
-                $('#movesCop').on('click', function (event) {
-                    toRoom();
-                });
-                $('#payTax').on('click', function (event) {
-                    giveMoney();
-                });
-                $('#inspect').on('click', function (event) {
-                    inspect();
-                });
+                $('#movesCop').on('click', toRoom);
+                $('#payTax').on('click', giveMoney);
+                $('#inspect').on('click', inspect);
                 break;
             case "human":
-                $('#suffer').on('click', function (event) {
-                    suffer();
-                });
-                $('#sufferBit').on('click', function (event) {
-                    suffer();
-                });
-                $('#sufferMore').on('click', function (event) {
-                    suffer();
-                });
+                $('#suffer').on('click', suffer);
+                $('#sufferBit').on('click', suffer);
+                $('#sufferMore').on('click', suffer);
         }
     }
 
@@ -207,7 +185,7 @@
                 player = data.player;
                 nickname = data.nickname;
                 getRoom(player.id_room);
-                var row = "<tr><th>" + nickname + "</th> <th>" + player.rang + "</th> <th>" + player.money + "</th> </tr>";
+                var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + player.type + "</th> <th>" + "rang: " + player.rang + "</th> <th>" + "exp: " + player.exp + "</th> <th>" + "money: " + player.money + "</th> </tr>";
                 $("#bodytbl").html(row);//заполняем "статбар" игрока
                 hideShowButtons(player.type);//прячем ненужные кнопки, показываем нужные
                 actionHandler(player.type);//обработчик всех действий

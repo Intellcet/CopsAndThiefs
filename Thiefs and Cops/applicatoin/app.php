@@ -66,8 +66,8 @@
         }
 		// get room info
         private function getRoomInfoMethod($param){
-            if ($param['id_room']){
-                return $this->game->getRoom($param['id_room'], true, true);
+            if ($param['id_room'] && $param['token']){
+                return $this->game->getRoom($param['id_room'], false, true);
             }
             return false;
         }

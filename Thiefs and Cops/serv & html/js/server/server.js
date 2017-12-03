@@ -32,7 +32,7 @@
         return getData({ method: 'finishGame', token: token });
     };
     this.getRoom = function (id_room) {
-        return getData({ method: 'getRoomInfo', id_room: id_room });
+        return getData({ method: 'getRoomInfo', token: token, id_room: id_room });
     };
     this.toRoom = function (name_room) {
         return getData({ method: 'toRoom', token: token, name_room: name_room });

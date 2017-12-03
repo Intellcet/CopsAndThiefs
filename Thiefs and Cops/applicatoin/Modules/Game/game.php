@@ -3,6 +3,45 @@
 
     class Data extends BaseModule{
 
+        private $COPS_RANGS = Array(//сделать таким образом
+            '1' => 'Рядовой'
+        );
+
+        private function setLvl($player, $exp) {
+            if ($exp <= 100) {
+                $player->rang = ($player->type === "cop") ? "Рядовой" : "Шкет";
+                return 1;
+            }
+            if ($exp <= 200) {
+                $player->rang = ($player->type === "cop") ? "Ефрейтор" : "Шестёрка";
+                return;
+            }
+            if ($exp <= 300) {
+                $player->rang = ($player->type === "cop") ? "Сержант" : "Карманник";
+				return;
+            }
+            if ($exp <= 400) {
+                $player->rang = ($player->type === "cop") ? "Лейтенант" : "Мужик";
+				return;
+            }
+            if ($exp <= 500) {
+                $player->rang = ($player->type === "cop") ? "Капитан" : "Шерстяной";
+				return;
+            }
+            if ($exp <= 600) {
+                $player->rang = ($player->type === "cop") ? "Майор" : "Блатной";
+				return;
+            }
+            if ($exp <= 700) {
+                $player->rang = ($player->type === "cop") ? "Полковник" : "Пахан";
+				return;
+            }
+            if ($exp <= 800) {
+                $player->rang = ($player->type === "cop") ? "Генерал" : "Вор в законе";
+				return;
+            }
+        }
+
         private function giveaway($user, $playerMoney, $money) {//сдать деньги в общак//заплатить налоги
             if ($money) {
                 $playerMoney -= $money;
@@ -39,6 +78,14 @@
                     $playerMoney += $stolenMoney;
                     $this->db->updateMoneyRoom($player->id_room, $room->money);
                     $this->db->setMoney($player->id, $playerMoney);
+                    if ($stolenMoney >= 100) {
+                        $exp = $this->db->getExp($player->id);
+                        $stolenMoney /= 100;
+                        $exp += $stolenMoney;
+                        $this->db->setExp($player->id, $exp);
+                        $this->setLvl($player, $exp);
+                        $this->db->setRang($player->id, $player->rang);
+                    }
                     return $this->db->getPlayer($user->id);
                 } else {
                     $playerMoney += $room->money;
@@ -99,8 +146,11 @@
                 $user = $this->db->getUserByToken($token);
                 $player = $this->db->getPlayer($user->id);
                 if($player) {
-                    $this->db->setPlayerToRoom($player->id_user, 1);
+                    $this->db->setPlayerToRoom($player->id, 1);
                     $player = $this->db->getPlayer($user->id);
+                    $exp = $this->db->getExp($player->id);
+                    $this->setLvl($player, $exp);
+                    $this->db->setRang($player->id, $player->rang);
                     $answer->{'player'} = $player;
                     $answer->{'nickname'} = $user->nickname;
                     return $answer;
@@ -114,7 +164,7 @@
                 $user = $this->db->getUserByToken($token);
                 $player = $this->db->getPlayer($user->id);
                 if($player) {
-                    return $this->db->setPlayerToRoom($player->id_user, '');
+                    return $this->db->setPlayerToRoom($player->id, '');
                 }
             }
             return false;
@@ -150,42 +200,65 @@
                 $way = $this->db->getWay($player->id_room, $room->id);
                 if ($way) {
                     $this->db->setPlayerToRoom($player->id, $room->id);
+                    $this->db->setAction($player->id, null, "toRoom");
                     return $room;
                 }
             }
             return false;
         }
 
-        public function action($token, $action, $money, $nickname){//совершить какое-либо действие
-            if ($token){
+        public function action($token, $action, $money, $nickname) {//совершить какое-либо действие
+            if ($token) {
                 $lvlThief = null;
                 $lvlCop = null;
                 $user = $this->db->getUserByToken($token);
                 $player = $this->db->getPlayer($user->id);
                 $playerMoney = $player->money;
-                if ($player){
-                    if (($action === 'giveaway' && $player->type === "thief") || ($action === 'payTax' && $player->type === "cop" )) {//сдать деньги в общак//заплатить налоги
-                        return $this->giveaway($user, $playerMoney, $money);
-                    }
-                    if ($action === 'steal' && $player->type === "thief") {//украсть у игрока
-                        return $this->steal($player, $playerMoney, $user, $nickname);
-                    }
-                    if ($action === 'search' && $player->type === "thief") {//выкрасть из комнаты
-                        return $this->search($user, $player, $playerMoney);
-                    }
-                    if ($action === 'lawyer' && $player->type === "thief") {
-                        return $this->lawyer($playerMoney, $lvlThief, $player, $money);
-
-                    }
-                    if ($action === 'grieve' && $player->type === "cop"){//пожопить
-                        return $this->grieve($nickname);
-                    }
-                    if ($action === 'inspect' && $player->type === "cop") {//осмотреться
-                        return $this->inspect($player);
-                    }
-                    if ($action === 'suffer' && $player->type === "human") {//страдать
-                        return $this->suffer($player, $playerMoney);
-                    }
+                if ($player && $action) {
+					switch ($action) {
+						case 'giveaway':
+							if ($player->type === "thief") {
+								$this->giveaway($user, $playerMoney, $money);
+							}
+						break;
+						case 'payTax':
+							if ($player->type === "cop") {
+								$this->giveaway($user, $playerMoney, $money);
+							}
+						break;
+						case 'steal':
+							if ($player->type === "thief") {
+								$this->steal($player, $playerMoney, $user, $nickname);
+							}
+						break;
+						case 'search':
+							if ($player->type === "thief") {
+								$this->search($user, $player, $playerMoney);
+							}
+						break;
+						case 'lawyer':
+							if ($player->type === "thief") {
+								$this->lawyer($playerMoney, $lvlThief, $player, $money);
+							}
+						break;
+						case 'grieve':
+							if ($player->type === "cop") {
+								$this->grieve($nickname);
+							}
+						break;
+						case 'inspect':
+							if ($player->type === "cop") {
+								$this->inspect($player);
+							}
+						break;
+						case 'suffer':
+							if ($player->type === "human") {
+								$this->suffer($player, $playerMoney);
+							}
+						break;
+					}
+					$this->db->setAction($player->id, null, $action);
+					return $this->db->getPlayer($user->id);
                 }
             }
         }
