@@ -223,6 +223,9 @@
                     }
                 }
             }
+            if ($param['player']->status === "жопят") {
+                return "Вас пытались пожопить!";
+            }
             return false;
         }
 

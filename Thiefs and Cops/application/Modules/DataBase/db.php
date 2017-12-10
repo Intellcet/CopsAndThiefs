@@ -11,7 +11,7 @@
         private $db;
 
         function __construct() {
-			// подключить БДz
+			// подключить БД
             $this->host = mysqli_connect($this->url, $this->user, $this->password);
             if (!$this->host) {
                 die('Ошибка соединения: ' . mysqli_error());
@@ -271,12 +271,9 @@
         }
 
         public function changePlayer($id_user, $type) {//изменяем тип игрока
-            if ($type === "thief" || $type === "cop") {
-                $query = "UPDATE player SET type='". $type ."' WHERE id_user=". $id_user ."";
-                mysqli_query($this->host, $query);
-                return true;
-            }
-            return false;
+            $query = "UPDATE player SET type='". $type ."' WHERE id_user=". $id_user;
+            mysqli_query($this->host, $query);
+            return true;
         }
 
         public function setStatus($id, $status) {
