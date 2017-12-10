@@ -1,9 +1,36 @@
-﻿function Game(options) {
+﻿function Timer() {
+    var interval;
+    var count = 0;
+
+    function clear() {
+        if (interval) {
+            clearInterval(interval);
+            interval = null;
+            count = 0;
+        }
+    }
+
+    this.start = function (seconds, everySecondCb, finishCb) {
+        clear();
+        if (seconds > 0) {
+            count = seconds
+            interval = setInterval(function () {
+                count--;
+                everySecondCb(count);
+                if (count <= 0) {
+                    clear();
+                    finishCb();
+                }
+            }, 1000);
+        }
+    };
+}
+
+function Game(options) {
 
     var server = options.server;
     var logoutSuccess = (options && options.callbacks && options.callbacks.logout instanceof Function) ? options.callbacks.logout : function () { };
 
-    var token = null;
     var player;
     var nickname;
     var room;
@@ -32,26 +59,6 @@
         }
     }
 
-    function hideShowButtons(type) {//показываем/скрываем нужные и ненужные кнопки
-        switch (type) {
-            case "cop":
-                $('#cop').show();
-                break;
-            case "thief":
-                $('#thief').show();
-                $('#lawyer').prop('disabled', true);
-                break;
-            case "human":
-                $('#human').show();
-                break;
-            default:
-                $('#thief').hide();
-                $('#human').hide();
-                $('#cop').hide();
-                break;
-        }
-    }
-
     function getRoom(id_room) {//получить данные о комнате
         if(id_room) {
             server.getRoom(id_room).done(function (data) {
@@ -70,132 +77,24 @@
         }
     }
 
-    function toRoom() {//двигаемся в другую комнату
-        var name_room = $('#command').val();//получаем значение с командной строки, куда двигаться
-        server.toRoom(name_room).done(function (data) {
-            if (data) {
-                getRoom(data.id);
-                $('#command').val("");
-            }
-        });
-    }
-
-    function giveMoney() {//отдаем деньги
-        var money = $('#command').val() - 0;
-        if (!isNaN(money)) {
-            server.action('giveaway', money).done(function (data) {
-                if (data) {
-                    $('#bodytbl').html("");
-                    var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + data.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.exp + "</th> <th>" + "money: " + data.money + "</th> </tr>";
-                    $("#bodytbl").html(row);
-                    $('#command').val("");
-                }
-            });
-        }
-    }
-
-    function steal() {//крадем деньги
-        var nickname = $('#command').val();
-        if (nickname) {
-            server.action('steal', null, nickname).done(function (data) {
-                if (data) {
-                    $('#bodytbl').html("");
-                    var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + data.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.exp + "</th> <th>" + "money: " + data.money + "</th> </tr>";
-                    $("#bodytbl").html(row);
-                    $('#command').val("");
-                }
-            });
-        }
-    }
-
-    function search() {//обыскиваем комнату
-        server.action('search').done(function (data) {
-            if (data) {
-                $('#bodytbl').html("");
-                var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + data.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.exp + "</th> <th>" + "money: " + data.money + "</th> </tr>";
-                $("#bodytbl").html(row);
-                $('#command').val("");
-            }
-        });
-    }
-
-    function lawyer() {//вызываем адвоката
-        var money = $('#command').val() - 0;
-        if (!isNaN(money)) {
-            server.action('lawyer', money).done(function (data) {
-                if (data) {
-                    //???
-                }
-            });
-        }
-    }
-
-    function inspect() {//осматриваем комнату в поисках вора
-        var nickname = $('#command').val();
-        if (nickname) {
-            server.action('inspect', null, nickname).done(function (data) {
-                if (data) {
-                    if (!isNaN(data)) {
-                        $('.screen').html("Вы немного увеличили опыт!")
-                    } else {
-                        $('.screen').html("Кажется, вы нашли вора( " + data + " )")
-                    }
-                }
-            });
-        }
-    }
-
-    function suffer() {//страдаем за терпилу
-        server.action('suffer', null, null).done(function (data) {
-            if (data) {
-                if (data.money <= 1000) {
-                    $('#bodytbl').html("");
-                    var row = "<tr><th>" + nickname + "</th> <th>" + data.rang + "</th> <th>" + data.money + "</th> </tr>";
-                    $("#bodytbl").html(row);
-                }
-            }
-        });
-    }
-
-    function actionHandler(type) {//обработчик действий
-        switch (type) {
-            case "thief":
-                $('#movesThief').on('click', toRoom);
-                $('#giveaway').on('click', giveMoney);
-                $('#steal').on('click', steal);
-                $('#search').on('click', search);
-                $('#lawyer').on('click', lawyer);
-                break;
-            case "cop":
-                $('#movesCop').on('click', toRoom);
-                $('#payTax').on('click', giveMoney);
-                $('#inspect').on('click', inspect);
-                break;
-            case "human":
-                $('#suffer').on('click', suffer);
-                $('#sufferBit').on('click', suffer);
-                $('#sufferMore').on('click', suffer);
-        }
-    }
-
     function startGame() {
         server.startGame().done(function (data) {
             if (data) {
-                hideShowButtons();
-                player = data.player;
-                nickname = data.nickname;
-                getRoom(player.id_room);
-                var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + player.type + "</th> <th>" + "rang: " + player.rang + "</th> <th>" + "exp: " + player.exp + "</th> <th>" + "money: " + player.money + "</th> </tr>";
+                //проверка на тип
+                if (data.player.type === "thief") {
+                    player = new Thief(data, server);
+
+                }
+                if (data.player.type === "cop") {
+                    player = new Cop(data, server);
+                }
+                if (data.player.type === "human") {
+                    player = new Human(data, server);
+                }
+                getRoom(data.player.id_room);
+                var row = "<tr><th>" + "nickname: " + data.nickname + "</th> <th>" + "type: " + data.player.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.player.exp + "</th> <th>" + "money: " + data.player.money + "</th> </tr>";
                 $("#bodytbl").html(row);//заполняем "статбар" игрока
-                hideShowButtons(player.type);//прячем ненужные кнопки, показываем нужные
-                actionHandler(player.type);//обработчик всех действий
-                exitHandler(player.type);//обработчик выхода
-                interval = setInterval(function () {//интервал, получающий статус
-                    if (player.status === "жопят") {
-                        $('#lawyer').prop('disabled', false);
-                        clearInterval(interval);
-                    }
-                }, 3000);
+                exitHandler(data.player.type);//обработчик выхода
             }
         });
     }
@@ -204,6 +103,7 @@
         logoutSuccess();
         $('#command').val("");
         $('#bodytbl').html("");
+        player.stopGetStatus();
     }
 
     function exitHandler(type) {//обработчик выхода
@@ -212,7 +112,6 @@
                 $('#logoutThief').on('click', function () {
                     server.finishGame().done(function () {
                         logout();
-                        clearInterval(interval);
                     });
                     off(type);
                 });
@@ -221,7 +120,6 @@
                 $('#logoutCop').on('click', function () {
                     server.finishGame().done(function () {
                         logout();
-                        clearInterval(interval);
                     });
                     off(type);
                 });
@@ -230,7 +128,6 @@
                 $("#logoutHuman").on('click', function () {
                     server.finishGame().done(function () {
                         logout();
-                        clearInterval(interval);
                     });
                     off(type);
                 });

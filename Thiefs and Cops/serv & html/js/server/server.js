@@ -31,6 +31,9 @@
     this.finishGame = function () {
         return getData({ method: 'finishGame', token: token });
     };
+    this.getStatus = function () {
+        return getData({ method: 'getStatus', token: token });
+    };
     this.getRoom = function (id_room) {
         return getData({ method: 'getRoomInfo', token: token, id_room: id_room });
     };
@@ -46,7 +49,7 @@
     this.getMessages = function () {
         return getData({ method: 'getMessages', token: token });
     };
-    this.action = function (action, money, nickname) {
-        return getData({ method: 'action', token: token, action: action, money: money, nickname: nickname });
+    this.action = function (action, money, nickname, name_room) {
+        return getData({ method: 'action', token: token, action: action, money: money, nickname: nickname, name_room: name_room });
     }
 }

@@ -1,16 +1,18 @@
-body 
+body
 {
     padding: 5px;
+    
 }
 
 
 .WhoInRoom
 {
-  text-align:left;
-  margin-bottom: 3px;
-  background:#eee;
-  width: auto;
-  height: 50vh;
+    text-align:left;
+    margin-bottom: 3px;
+    background:#eee;
+    width: auto;
+    height: 50vh;
+    border-radius: 10px;
 }
 
 .Players{
@@ -23,22 +25,17 @@ body
 }
 
 .Chat{
-  text-align:left;
-  border: 1px solid #fff;
-  background:#eee;
-  width: auto;
-  height: 48vh;
-}
-
-.actions
-{
-    overflow: hidden;
-    text-overflow: ellipsis;
+    text-align:left;
+    border: 1px solid #fff;
+    background:#eee;
+    width: auto;
+    height: 100%;
+    border-radius: 10px;
 }
 
 #chat
 {
-  padding:0px;
+    padding:0px;
 }
 
 #letters
@@ -60,32 +57,94 @@ body
 
     text-align: left;
     background: #eee;
-    height: 99.5vh;
+    height: 100%;
     width: auto;
     overflow: auto;
     margin-bottom: 10px;
+    border-radius: 10px;
 }
 .screen
 {
     background-color:#aaa;
-    border: 5px solid black;
     max-height: 80%
+
 }
 #command
 {
-    margin-top: 3px;
-    height: 20px;
-    width: 100%;
+    margin-top: 10px;
+    min-width: 50vw;
+
+}
+
+#cmndbtn {
+    margin-top: 10px;
 }
 #statBar
 {
     background-color:#aaa;
-    border: 1px solid black;
     height: 30px;
+    border-radius: 10px;
+}
+#actions
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+
 }
 
 #input {
     min-width: 80%;
     margin: 10px;
 }
+
+#gamePage {
+    margin-top: 0px;
+    border-top: 0px;
+    padding-top: 0px;
+}
+
+#room {
+    margin-top: 1px; max-height: 300px; width: 100%
+}
+
+#gameHeader {
+    margin: 0px;
+}
+
+.screen {
+    width: 100%;
+    height: 65vh;
+    border-radius: 10px;
+
+}
+
+#statBar {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 0px;
+    margin-top: 5px;
+}
+
+#actions {
+    margin-bottom: 0px;
+    margin-top: 5px;
+}
+
+.action-buttons {
+    margin: 3%;
+}
+
+#info {
+    width: auto;
+    max-width: 300px;
+    min-width: 300px;
+    position: absolute;
+    height: 65vh;
+    right: 10px;
+}
+
+.radThings {
+    border-radius: 10px;
+}
+
 
