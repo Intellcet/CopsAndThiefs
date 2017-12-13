@@ -270,8 +270,8 @@
             return false;
         }
 
-        public function changePlayer($id_user, $type) {//изменяем тип игрока
-            $query = "UPDATE player SET type='". $type ."' WHERE id_user=". $id_user;
+        public function changePlayer($id, $type) {//изменяем тип игрока
+            $query = "UPDATE player SET type='". $type ."' WHERE id=". $id;
             mysqli_query($this->host, $query);
             return true;
         }

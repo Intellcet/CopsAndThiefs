@@ -77,13 +77,7 @@
             }
             return false;
         }
-		/*// move to room
-        private function toRoomMethod($param){
-            if ($param['token'] && $param['name_room']){
-                return $this->game->toRoom($param['token'], $param['name_room']);
-            }
-            return false;
-        }*/
+
         //giveaway money
         private function giveMoneyMethod($param) {
             if ($param['token'] && $param['money']){
@@ -107,11 +101,11 @@
 
 		private function actionMethod($param) {//совершить действие
             if ($param['token']) {
-                return $this->game->action($param['token'], $param['action'], $param['money'], $param['nickname'], $param['name_room']);
+                return $this->game->action($param['token'], $param['action'], $param['money'], $param['nickname'], $param['name_room'], $param['type']);
             }
         }
 
-        function __construct(){
+        function __construct() {
             $this->db = new DB();
             $this->auth = new Auth($this->db);
             $this->game = new Data($this->db);

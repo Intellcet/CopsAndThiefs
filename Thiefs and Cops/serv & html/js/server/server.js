@@ -49,7 +49,7 @@
     this.getMessages = function () {
         return getData({ method: 'getMessages', token: token });
     };
-    this.action = function (action, money, nickname, name_room) {
-        return getData({ method: 'action', token: token, action: action, money: money, nickname: nickname, name_room: name_room });
+    this.action = function (action, money, nickname, name_room, type) {
+        return getData({ method: 'action', token: token, action: action, money: money, nickname: nickname, name_room: name_room, type: type });
     }
 }

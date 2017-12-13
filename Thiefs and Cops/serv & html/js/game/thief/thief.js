@@ -1,11 +1,11 @@
-﻿function Thief(data, _server) {
+﻿function Thief(_data, _server) {
 
     var server = _server;
     var timer = new Timer();
 
-    var player = data.player;
-    var rang = data.rang;
-    var nickname = data.nickname;
+    var player = _data.player;
+    var rang = _data.rang;
+    var nickname = _data.nickname;
     var interval;
 
     function createButtons() {
@@ -170,12 +170,24 @@
         $('#logoutThief').prop('disabled', false);
     }
 
+    function changeType() {
+        server.action("changeType").done(function (data) {
+            if (data.action) {
+                var human = {};
+                human.player = data.player;
+                human.rang = data.rang;
+                human.nickname = data.nickname;
+                clearInterval(interval);
+                player = new Human(human, server);
+            }
+        });
+    }
+
     function getStatus() {
         server.getStatus().done(function (data) {
             if (data) {
                 if (data === "жопят") {
                     inFight();
-                    clearInterval(interval);
                     timer.start(10, function (sec) {
                         $('#screen').html("Вам бросили предъяву, у вас есть 10 секунд на вызов адвоката: " + sec);
                     }, function () {
@@ -183,6 +195,10 @@
                         $('#command').val("");
                         toKnowResultThief();
                     });
+                    return;
+                }
+                if (data === "терпите") {
+                    changeType();
                     return;
                 }
                 normal();

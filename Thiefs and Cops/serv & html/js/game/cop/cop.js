@@ -1,11 +1,12 @@
-﻿function Cop(data, _server) {
+﻿function Cop(_data, _server) {
 
     var timer = new Timer();
     var server = _server;
+    //var data = _data;
 
-    var player = data.player;
-    var rang = data.rang;
-    var nickname = data.nickname;
+    var player = _data.player;
+    var rang = _data.rang;
+    var nickname = _data.nickname;
     var interval;
 
     function createButtons() {
@@ -145,6 +146,19 @@
         $('#logoutCop').prop('disabled', false);
     }
 
+    function changeType() {
+        server.action("changeType").done(function (data) {
+            if (data.action) {
+                var human = {};
+                human.player = data.player;
+                human.rang = data.rang;
+                human.nickname = data.nickname;
+                clearInterval(interval);
+                player = new Human(human, server);
+            }
+        });
+    }
+
     function getStatus() {
         server.getStatus().done(function (data) {
             if (data) {
@@ -153,8 +167,12 @@
                     inFight();
                     return;
                 }
-                normal();
+                if (data === "терпите") {
+                    changeType();
+                    return;
+                }
             }
+            normal();
         });
     }
 

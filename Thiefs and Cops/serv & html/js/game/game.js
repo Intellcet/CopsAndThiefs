@@ -83,7 +83,6 @@ function Game(options) {
                 //проверка на тип
                 if (data.player.type === "thief") {
                     player = new Thief(data, server);
-
                 }
                 if (data.player.type === "cop") {
                     player = new Cop(data, server);
