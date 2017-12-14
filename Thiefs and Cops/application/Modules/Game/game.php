@@ -374,6 +374,22 @@
             return false;
         }
 
+        public function getWays($token, $id) {
+            if ($token && $id) {
+                $result = new stdClass();
+                $result->rooms = Array();
+                $room = $this->db->getRoom($id);
+                if ($room) {
+                    $ways = $this->db->getWays($room->id);
+                    for ($i = 0; $i < count($ways); $i++) {
+                        $result->rooms[] = $this->db->getRoom($ways[$i]->id_to)->name;
+                    }
+                }
+                return $result;
+            }
+            return false;
+        }
+
         public function toRoom($param) {//переместиться в другую комнату
             $room = $this->db->getRoomByName($param['name_room']);
             $way = $this->db->getWay($param['player']->id_room, $room->id);

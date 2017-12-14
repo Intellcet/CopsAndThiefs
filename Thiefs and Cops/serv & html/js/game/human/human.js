@@ -5,7 +5,8 @@
     var player = data.player;
     var rang = data.rang;
     var nickname = data.nickname;
-    var interval;
+    var intervalStatus;
+    var intervalRoom;
 
     function createButtons() {
         $('#actions').html("");
@@ -27,6 +28,7 @@
             server.getRoom(id_room).done(function (data) {
                 if (data) {
                     $("#room").html('');//чистим содержимое комнаты
+                    player = data.player;
                     room = data.room;
                     var players = data.players;//игроки в комнате
                     var nicknames = data.nicknames;//их ники
@@ -40,11 +42,27 @@
         }
     }
 
+    function getWays(id_room) {
+        if (id_room) {
+            server.getWays(id_room).done(function (data) {
+                if (data) {
+                    $('#screen').append("<span>Можно выйти в следующие комнаты: </span><br />");
+                    $('#screen').append("<ol id='list'></ol>");
+                    for (var i = 0; i < data.rooms.length; i++) {
+                        var list = "<li>" + data.rooms[i] + "</li>";
+                        $('#screen').append(list);
+                    }
+                }
+            });
+        }
+    }
+
     function toRoom() {//двигаемся в другую комнату
         var name_room = $('#command').val();//получаем значение с командной строки, куда двигаться
         server.action('toRoom', null, null, name_room).done(function (data) {
             if (data) {
                 getRoom(data.action.id);
+                getWays(data.action.id);
                 $('#command').val("");
             }
         });
@@ -76,7 +94,8 @@
                     cop.player = data.player;
                     cop.rang = data.rang;
                     cop.nickname = data.nickname;
-                    clearInterval(interval);
+                    clearInterval(intervalStatus);
+                    clearInterval(intervalRoom);
                     player = new Cop(cop, server);
                 }
                 if (data.player.type === "thief") {
@@ -84,7 +103,8 @@
                     thief.player = data.player;
                     thief.rang = data.rang;
                     thief.nickname = data.nickname;
-                    clearInterval(interval);
+                    clearInterval(intervalStatus);
+                    clearInterval(intervalRoom);
                     player = new Thief(thief, server);
                 }
             }
@@ -135,11 +155,13 @@
         } else {
             changeClass();
         }
-        interval = setInterval(getStatus, 3000);
+        intervalStatus = setInterval(getStatus, 3000);
+        intervalRoom = setInterval(getRoom, 3000, player.id_room);
     }
 
     this.stopGetStatus = function () {
-        clearInterval(interval);
+        clearInterval(intervalStatus);
+        clearInterval(intervalRoom);
     };
 
     init();

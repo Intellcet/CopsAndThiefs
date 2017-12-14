@@ -77,6 +77,21 @@ function Game(options) {
         }
     }
 
+    function getWays(id_room) {
+        if (id_room) {
+            server.getWays(id_room).done(function (data) {
+                if (data) {
+                    $('#screen').append("<span>Можно выйти в следующие комнаты: </span><br />");
+                    $('#screen').append("<ol id='list'></ol>");
+                    for (var i = 0; i < data.rooms.length; i++) {
+                        var list = "<li>" + data.rooms[i] + "</li>";
+                        $('#screen').append(list);
+                    }
+                }
+            });
+        }
+    }
+
     function startGame() {
         server.startGame().done(function (data) {
             if (data) {
@@ -91,6 +106,7 @@ function Game(options) {
                     player = new Human(data, server);
                 }
                 getRoom(data.player.id_room);
+                getWays(data.player.id_room);
                 var row = "<tr><th>" + "nickname: " + data.nickname + "</th> <th>" + "type: " + data.player.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.player.exp + "</th> <th>" + "money: " + data.player.money + "</th> </tr>";
                 $("#bodytbl").html(row);//заполняем "статбар" игрока
                 exitHandler(data.player.type);//обработчик выхода

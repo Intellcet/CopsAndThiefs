@@ -212,6 +212,16 @@
              return $res;
         }
 
+        public function getWays($id_from) {//получаем путь
+            $query = "SELECT * " . "FROM way " . "WHERE id_from=" . $id_from;
+            $result = mysqli_query($this->host, $query);
+            $res = Array();
+            while ($row = mysqli_fetch_object($result)) {
+                $res[] = $row;
+            }
+            return $res;
+        }
+
         public function setWay($id_from, $id_to) {//создаем новый путь
             if ($id_from && $id_to) {
                 $query = "INSERT INTO way (id_from, id_to) VALUES (" . $id_from . ", " . $id_to . ")";

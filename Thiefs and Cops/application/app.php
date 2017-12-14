@@ -78,6 +78,13 @@
             return false;
         }
 
+        private function getWaysMethod($param) {
+            if ($param['id_room'] && $param['token']){
+                return $this->game->getWays($param['token'], $param['id_room']);
+            }
+            return false;
+        }
+
         //giveaway money
         private function giveMoneyMethod($param) {
             if ($param['token'] && $param['money']){

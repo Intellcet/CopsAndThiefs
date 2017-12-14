@@ -6,7 +6,8 @@
     var player = _data.player;
     var rang = _data.rang;
     var nickname = _data.nickname;
-    var interval;
+    var intervalStatus;
+    var intervalRoom;
 
     function createButtons() {
         $('#actions').html("");
@@ -42,11 +43,28 @@
         }
     }
 
+    function getWays(id_room) {
+        if (id_room) {
+            server.getWays(id_room).done(function (data) {
+                if (data) {
+                    $('#screen').append("<span>Можно выйти в следующие комнаты: </span><br />");
+                    $('#screen').append("<ol id='list'></ol>");
+                    for (var i = 0; i < data.rooms.length; i++) {
+                        var list = "<li>" + data.rooms[i] + "</li>";
+                        $('#screen').append(list);
+                    }
+                }
+            });
+        }
+    }
+
     function toRoom() {//двигаемся в другую комнату
         var name_room = $('#command').val();//получаем значение с командной строки, куда двигаться
         server.action('toRoom', null, null, name_room).done(function (data) {
             if (data) {
+                player = data.player;
                 getRoom(data.action.id);
+                getWays(data.action.id);
                 $('#command').val("");
             }
         });
@@ -177,7 +195,8 @@
                 human.player = data.player;
                 human.rang = data.rang;
                 human.nickname = data.nickname;
-                clearInterval(interval);
+                clearInterval(intervalStatus);
+                clearInterval(intervalRoom);
                 player = new Human(human, server);
             }
         });
@@ -219,11 +238,13 @@
         $("#bodytbl").html(row);//заполняем "статбар" игрока
         createButtons();
         actionsHundler();
-        interval = setInterval(getStatus, 3000);
+        intervalStatus = setInterval(getStatus, 3000);
+        intervalRoom = setInterval(getRoom, 3000, player.id_room);
     }
 
     this.stopGetStatus = function () {
-        clearInterval(interval);
+        clearInterval(intervalStatus);
+        clearInterval(intervalRoom);
     };
 
     init();
