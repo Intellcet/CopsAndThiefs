@@ -12,6 +12,7 @@
                 'actions' => Array(
                     'giveaway' => 'giveaway',
                     'grieve' => 'grieve',
+                    'callWitnesses' => 'callWitnesses',
                     'inspect' => 'inspect',
                     'toRoom' => 'toRoom',
                     'changeType' => 'changeType',
@@ -172,6 +173,21 @@
                 return "Не ввели ник игрока, которого хотите пожопить!";
             }
             return false;
+        }
+
+        private function callWitnesses($param) {
+            if ($param['money'] && ($param['player']->status === "жопит" || $param['player']->status === "жопят")) {
+                $param['player']->money -= $param['money'];
+                if ($param['player']->money >= 0) {
+                    $witnesses = round($param['money'] / 1000);
+                    $param['player']->strength += $witnesses;
+                    $this->db->setMoney($param['player']->id, $param['player']->money);
+                    $this->db->setStrength($param['player']->id, $param['player']->strength);
+                    return true;
+                }
+                return "Недостаточно средств!!!";
+            }
+            return "Не ввели деньги!";
         }
 
         private function victimBetterCop($player, $victim) {//вспомогательная функция

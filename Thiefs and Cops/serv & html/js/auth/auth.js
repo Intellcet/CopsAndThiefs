@@ -39,13 +39,17 @@
                         showGame();
                         loginSuccess(data.token);
                     } else {
-                        alert('pass or log');
+                        $('#error').remove();
+                        var span = "<span id='error' class='alert-danger'>" + "Неверный логин и(или) пароль!" + "</span>";
+                        $('.wrapper').append(span);
                     }
                 });     
                 $('#login').val('');
                 $('#pass').val('');
             } else {
-                alert('pass or log');
+                $('#error').remove();
+                var span = "<span id='error' class='alert-danger' style='margin-top:5px;'>" + "Не ввели логин и(или) пароль!" + "</span>";
+                $('.wrapper').append(span);
             }
         });
     }

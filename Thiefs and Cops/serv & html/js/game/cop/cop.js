@@ -16,6 +16,7 @@
         $('#actions').append('<input id="payTax"    type="button" class="btn btn-secondary action-buttons" value="Заплатить налоги" />');
         $('#actions').append('<input id="inspect"   type="button" class="btn btn-secondary action-buttons" value="Осмотреться" />');
         $('#actions').append('<input id="grieve"    type="button" class="btn btn-secondary action-buttons" value="Пожопить" />');
+        $('#actions').append('<input id="witnesses"    type="button" class="btn btn-secondary action-buttons" value="Позвать понятых" />');
         $('#actions').append('<input id="logoutCop" type="button" class="btn btn-secondary action-buttons" value="Выход" />');
     }
 
@@ -100,8 +101,30 @@
         }
     }
 
+    function callWitnesses() {
+        var money = $('#command').val() - 0;
+        if (!isNaN(money)) {
+            server.action('callWitnesses', money).done(function (data) {
+                if (data) {
+                    $('#command').val('');
+                    if (typeof (data.action) === 'string') {
+                        var span = "<span id='span'>" + data.action + "</span>";
+                        $('#screen').append(span);
+                        setTimeout(function () { $('#span').remove(); }, 2000);
+                    } else {
+                        var span = "<span id='span'>" + "Вы нашли свидетелей!" + "</span>";
+                        $('#screen').append(span);
+                        fillStatBar(data);
+                        setTimeout(function () { $('#span').remove(); }, 2000);
+                        player = data.player;
+                    }
+                }
+            });
+        }
+    }
+
     function inspect() {//осматриваем комнату в поисках вора
-        server.action('inspect', null, null).done(function (data) {
+        server.action('inspect').done(function (data) {
             if (data) {
                 if (typeof (data.action) !== 'string') {
                     fillStatBar(data);
