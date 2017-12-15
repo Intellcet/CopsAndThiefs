@@ -1,15 +1,15 @@
-﻿function Human(data, _server) {
+﻿function Human(options) {
 
-    var server = _server;
+    var server = options.server;
 
-    var player = data.player;
-    var rang = data.rang;
-    var nickname = data.nickname;
-    var intervalStatus;
-    var intervalRoom;
+    var player = options.data.player;
+    var rang = options.data.rang;
+    var nickname = options.data.nickname;
+
+    var changeType = (options && options.callbacks && options.callbacks.changeType instanceof Function) ? options.callbacks.changeType : function () { };
 
     function createButtons() {
-        $('#actions').html("");
+        $('#actions').empty();
         $('#actions').append('<input id="suffer"      type="button" class="btn btn-secondary action-buttons" value="Потерпеть" />');
         $('#actions').append('<input id="sufferBit"   type="button" class="btn btn-secondary action-buttons" value="Потерпеть в другой комнате" />');
         $('#actions').append('<input id="sufferMore"  type="button" class="btn btn-secondary action-buttons" value="Потерпеть еще чуть-чуть" />');
@@ -18,21 +18,23 @@
     }
 
     function fillStatBar(data) {
-        $('#bodytbl').html("");
+        $('#bodytbl').empty();
         var row = "<tr><th>" + "nickname: " + data.nickname + "</th> <th>" + "type: " + data.player.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.player.exp + "</th> <th>" + "money: " + data.player.money + "</th> </tr>";
-        $("#bodytbl").html(row);
+        $("#bodytbl").append(row);
     }
 
     function getRoom(id_room) {//получить данные о комнате
         if (id_room) {
             server.getRoom(id_room).done(function (data) {
                 if (data) {
-                    $("#room").html('');//чистим содержимое комнаты
+                    $("#room").empty();//чистим содержимое комнаты
+                    $('#nameRoom').empty();
                     player = data.player;
                     room = data.room;
                     var players = data.players;//игроки в комнате
                     var nicknames = data.nicknames;//их ники
-                    $('#nameRoom').html("&nbsp" + room.name + ":");//выводим название комнаты
+                    var span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
+                    $('#nameRoom').append(span);//выводим название комнаты
                     for (var i = 0; i < nicknames.length; i++) {
                         var elem = '<p style="margin-bottom: 5px;">' + nicknames[i] + '</p>';
                         $("#room").append(elem);//выводим ники игроков на экран
@@ -46,11 +48,14 @@
         if (id_room) {
             server.getWays(id_room).done(function (data) {
                 if (data) {
-                    $('#screen').append("<span>Можно выйти в следующие комнаты: </span><br />");
-                    $('#screen').append("<ol id='list'></ol>");
+                    $('#screen').empty();
+                    var span = "<span class='spanConst'>Можно выйти в следующие комнаты: </span><br />";
+                    $('#screen').append(span);
+                    var ul = "<ul id='list'></ul>";
+                    $('#screen').append(ul);
                     for (var i = 0; i < data.rooms.length; i++) {
                         var list = "<li>" + data.rooms[i] + "</li>";
-                        $('#screen').append(list);
+                        $('#list').append(list);
                     }
                 }
             });
@@ -77,57 +82,24 @@
                     }
                 }
                 if (typeof (data.action) === 'string') {
-                    $('#screen').html(data.action);
+                    var span = "<span id='span'>" + data.action + "</span>"
+                    $('#screen').append(span);
                     changeClass();
-                    setTimeout(function () { $('#screen').html(""); }, 2000);
+                    setTimeout(function () { $('#span').remove(); }, 2000);
                 }
             }
         });
     }
 
-    function changeType() {
-        var type = $('#command').val();//получаем значение с командной строки
-        server.action('changeType', null, null, null, type).done(function (data) {
-            if (data) {
-                if (data.player.type === "cop") {
-                    var cop = {};
-                    cop.player = data.player;
-                    cop.rang = data.rang;
-                    cop.nickname = data.nickname;
-                    clearInterval(intervalStatus);
-                    clearInterval(intervalRoom);
-                    player = new Cop(cop, server);
-                }
-                if (data.player.type === "thief") {
-                    var thief = {};
-                    thief.player = data.player;
-                    thief.rang = data.rang;
-                    thief.nickname = data.nickname;
-                    clearInterval(intervalStatus);
-                    clearInterval(intervalRoom);
-                    player = new Thief(thief, server);
-                }
-            }
-        });
-    }
-
-    function getStatus() {
-        server.getStatus().done(function (data) {
-            if (data) {
-                console.log(data);
-                if (data === "смените класс") {
-                    changeClass();
-                    return;
-                }
-            }
-        });
-    }
-
-    function actionsHundler() {
-        $('#suffer').on('click', suffer);
-        $('#sufferBit').on('click', toRoom);
-        $('#sufferMore').on('click', suffer);
-        $('#changeType').on('click', changeType);
+    function change() {
+        type = $('#command').val();
+        if (type) {
+            changeType(type);
+        } else {
+            var span = "<span id='span'>" + "Введите тип!" + "</span>";
+            $('#screen').append(span);
+            setTimeout(function () { $('#span').remove(); }, 2000);
+        }
     }
 
     function changeClass() {
@@ -145,24 +117,36 @@
         $('#logoutHuman').prop('disabled', false);
     }
 
-    function init() {
-        var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + player.type + "</th> <th>" + "rang: " + rang + "</th> <th>" + "exp: " + player.exp + "</th> <th>" + "money: " + player.money + "</th> </tr>";
-        $("#bodytbl").html(row);//заполняем "статбар" игрока
-        createButtons();
-        actionsHundler();
-        if (player.status === "терпите") {
-            normal();
-        } else {
-            changeClass();
-        }
-        intervalStatus = setInterval(getStatus, 3000);
-        intervalRoom = setInterval(getRoom, 3000, player.id_room);
+    function actionsHundler() {
+        $('#suffer').on('click', suffer);
+        $('#sufferBit').on('click', toRoom);
+        $('#sufferMore').on('click', suffer);
+        $('#changeType').on('click', change);
     }
 
-    this.stopGetStatus = function () {
-        clearInterval(intervalStatus);
-        clearInterval(intervalRoom);
+    function init() {
+        createButtons();
+        if (player.status === "терпите") {
+            normal();
+        }
+        if (player.status === "смените тип") {
+            changeClass();
+        }
+        actionsHundler();
+    }
+
+    this.getType = function () {
+        return player.type;
     };
+
+    this.getStatus = function (data) {
+        if (data === "жопят") {
+            var span = "<span id='span'>" + "Вас жопят!" + "</span>";
+            $('#screen').append(span);
+            setTimeout(function () { $('#span').remove(); }, 2000);
+            return;
+        }
+    }
 
     init();
 }

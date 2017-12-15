@@ -10,7 +10,7 @@
                 for (var i = 0; i < result.length; i++) {
                     str += '<b>' + result[i].nickname + '</b>:&nbsp' + result[i].text + '<br>';
                 }
-                $('#letters').html(str);
+                $('#letters').append(str);
             }
         });
     }

@@ -151,10 +151,7 @@
         }
 
         private function toKnowResultThief($param) {
-            if ($param['player']->status === "жопят"){
-                return $this->db->getPlayer($param['player']->id);
-            }
-            return false;
+            return $this->db->getPlayer($param['user']->id);
         }
 
         private function grieve($param) {//пожопить(!!!)
@@ -250,7 +247,7 @@
                 }
             }
             if ($param['player']->status === "жопят") {
-                return "Вас пытались пожопить!";
+                return $this->db->getPlayer($param['user']->id);
             }
             return false;
         }
@@ -335,7 +332,7 @@
                 $user = $this->db->getUserByToken($token);
                 $player = $this->db->getPlayer($user->id);
                 if($player) {
-                    return $this->db->setPlayerToRoom($player->id, '');
+                    return $this->db->setPlayerToRoom($player->id, 0);
                 }
             }
             return false;

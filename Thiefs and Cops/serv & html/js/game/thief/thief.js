@@ -1,16 +1,17 @@
-﻿function Thief(_data, _server) {
+﻿function Thief(options) {
 
-    var server = _server;
+    var server = options.server;
     var timer = new Timer();
 
-    var player = _data.player;
-    var rang = _data.rang;
-    var nickname = _data.nickname;
-    var intervalStatus;
-    var intervalRoom;
+    var player = options.data.player;
+    var rang = options.data.rang;
+    var nickname = options.data.nickname;
+
+    var startGettingStatus = (options && options.callbacks && options.callbacks.startGettingStatus instanceof Function) ? options.callbacks.startGettingStatus : function () { };
+    var changeType = (options && options.callbacks && options.callbacks.changeType instanceof Function) ? options.callbacks.changeType : function () { };
 
     function createButtons() {
-        $('#actions').html("");
+        $('#actions').empty();
         $('#actions').append('<input id="movesThief"  type="button" class="btn btn-secondary action-buttons" value="Перейти" />');
         $('#actions').append('<input id="giveaway"    type="button" class="btn btn-secondary action-buttons" value="Скинуть деньги в общак" />');
         $('#actions').append('<input id="steal"       type="button" class="btn btn-secondary action-buttons" value="Украсть" />');
@@ -20,20 +21,22 @@
     }
 
     function fillStatBar(data) {
-        $('#bodytbl').html("");
+        $('#bodytbl').empty();
         var row = "<tr><th>" + "nickname: " + data.nickname + "</th> <th>" + "type: " + data.player.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.player.exp + "</th> <th>" + "money: " + data.player.money + "</th> </tr>";
-        $("#bodytbl").html(row);
+        $("#bodytbl").append(row);
     }
 
     function getRoom(id_room) {//получить данные о комнате
         if (id_room) {
             server.getRoom(id_room).done(function (data) {
                 if (data) {
-                    $("#room").html('');//чистим содержимое комнаты
+                    $("#room").empty();//чистим содержимое комнаты
+                    $('#nameRoom').empty();
                     room = data.room;
                     var players = data.players;//игроки в комнате
                     var nicknames = data.nicknames;//их ники
-                    $('#nameRoom').html("&nbsp" + room.name + ":");//выводим название комнаты
+                    var span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
+                    $('#nameRoom').append(span);//выводим название комнаты
                     for (var i = 0; i < nicknames.length; i++) {
                         var elem = '<p style="margin-bottom: 5px;">' + nicknames[i] + '</p>';
                         $("#room").append(elem);//выводим ники игроков на экран
@@ -47,11 +50,14 @@
         if (id_room) {
             server.getWays(id_room).done(function (data) {
                 if (data) {
-                    $('#screen').append("<span>Можно выйти в следующие комнаты: </span><br />");
-                    $('#screen').append("<ol id='list'></ol>");
+                    $('#screen').empty();
+                    var span = "<span class='spanConst'>Можно выйти в следующие комнаты: </span><br />";
+                    $('#screen').append(span);
+                    var ul = "<ul id='list'></ul>";
+                    $('#screen').append(ul);
                     for (var i = 0; i < data.rooms.length; i++) {
                         var list = "<li>" + data.rooms[i] + "</li>";
-                        $('#screen').append(list);
+                        $('#list').append(list);
                     }
                 }
             });
@@ -76,10 +82,10 @@
             server.action('giveaway', money).done(function (data) {
                 if (data) {
                     if (typeof (data.action) === 'string') {
-                        var span = "<span>" + data.action + "</span>";
-                        $('#screen').html(span);
+                        var span = "<span id='span'>" + data.action + "</span>";
+                        $('#screen').append(span);
                         $('#command').val("");
-                        setTimeout(function () { $('#screen').html(""); }, 2000);
+                        setTimeout(function () { $('#span').remove(); }, 2000);
                     }
                     if (typeof (data.action) === 'object') {
                         fillStatBar(data);
@@ -88,10 +94,10 @@
                 }
             });
         } else {
-            var span = "<span>" + "Вы ввели не числовое значение!" + "</span>";
-            $('#screen').html(span);
+            var span = "<span id='span'>" + "Вы ввели не числовое значение!" + "</span>";
+            $('#screen').append(span);
             $('#command').val("");
-            setTimeout(function () { $('#screen').html(""); }, 2000);
+            setTimeout(function () { $('#span').remove(); }, 2000);
         }
     }
 
@@ -99,10 +105,10 @@
         server.action('search').done(function (data) {
             if (data) {
                 if (typeof (data.action) === 'string') {
-                    var span = "<span>" + data.action + "</span>";
-                    $('#screen').html(span);
+                    var span = "<span id='span'>" + data.action + "</span>";
+                    $('#screen').append(span);
                     $('#command').val("");
-                    setTimeout(function () { $('#screen').html(""); }, 2000);
+                    setTimeout(function () { $('#span').remove(); }, 2000);
                 }
                 if (typeof (data.action) === 'object') {
                     fillStatBar(data);
@@ -118,10 +124,10 @@
         server.action('steal', null, nickname).done(function (data) {
             if (data) {
                 if (typeof (data.action) === 'string') {
-                    var span = "<span>" + data.action + "</span>";
-                    $('#screen').html(span);
+                    var span = "<span id='span'>" + data.action + "</span>";
+                    $('#screen').append(span);
                     $('#command').val("");
-                    setTimeout(function () { $('#screen').html(""); }, 2000);
+                    setTimeout(function () { $('#span').remove(); }, 2000);
                 }
                 if (typeof (data.action) === 'object') {
                     fillStatBar(data);
@@ -139,12 +145,14 @@
                 if (data) {
                     $('#command').val('');
                     if (typeof (data.action) === 'string') {
-                        $('#screen').html(data.action);
-                        setTimeout(function () { $('#screen').html(""); }, 2000);
+                        var span = "<span id='span'>" + data.action + "</span>";
+                        $('#screen').append(span);
+                        setTimeout(function () { $('#span').remove(); }, 2000);
                     } else {
-                        $('#screen').html("Вы успешно увеличили уровень адвоката");
+                        var span = "<span id='span'>" + "Вы успешно увеличили уровень адвоката" + "</span>";
+                        $('#screen').append(span);
                         fillStatBar(data);
-                        setTimeout(function () { $('#screen').html(""); }, 2000);
+                        setTimeout(function () { $('#span').remove(); }, 2000);
                         player = data.player;
                     }
                 }
@@ -156,17 +164,17 @@
         server.action('toKnowResultThief').done(function (data) {
             if (data) {
                 if (player.exp < data.player.exp) {
-                    $('#screen').html("Вас не смогли пожопить!");
+                    var span = "<span id='span'>" + "Вас не смогли пожопить!" + "</span>";
+                    $('#screen').append(span);
                     fillStatBar(data);
-                    setTimeout(function () { $('#screen').html(""); }, 2000);
-                    interval = setInterval(getStatus, 3000);
+                    setTimeout(function () { $('#span').remove(); }, 2000);
                 }
                 if (player.exp >= data.player.exp) {
-                    $('#screen').html("Вас пожопили!");
+                    var span = "<span id='span'>" + "Вас пожопили!" + "</span>";
+                    $('#screen').append(span);
                     fillStatBar(data);
-                    setTimeout(function () { $('#screen').html(""); }, 2000);
-                    interval = setInterval(getStatus, 3000);
-                }
+                    setTimeout(function () { $('#span').remove(); }, 2000);
+                };
             }
         });
     }
@@ -188,43 +196,6 @@
         $('#logoutThief').prop('disabled', false);
     }
 
-    function changeType() {
-        server.action("changeType").done(function (data) {
-            if (data.action) {
-                var human = {};
-                human.player = data.player;
-                human.rang = data.rang;
-                human.nickname = data.nickname;
-                clearInterval(intervalStatus);
-                clearInterval(intervalRoom);
-                player = new Human(human, server);
-            }
-        });
-    }
-
-    function getStatus() {
-        server.getStatus().done(function (data) {
-            if (data) {
-                if (data === "жопят") {
-                    inFight();
-                    timer.start(10, function (sec) {
-                        $('#screen').html("Вам бросили предъяву, у вас есть 10 секунд на вызов адвоката: " + sec);
-                    }, function () {
-                        $('#screen').html("");
-                        $('#command').val("");
-                        toKnowResultThief();
-                    });
-                    return;
-                }
-                if (data === "терпите") {
-                    changeType();
-                    return;
-                }
-                normal();
-            }
-        });
-    }
-
     function actionsHundler() {
         $('#movesThief').on('click', toRoom);
         $('#giveaway').on('click', giveMoney);
@@ -234,17 +205,35 @@
     }
 
     function init() {
-        var row = "<tr><th>" + "nickname: " + nickname + "</th> <th>" + "type: " + player.type + "</th> <th>" + "rang: " + rang + "</th> <th>" + "exp: " + player.exp + "</th> <th>" + "money: " + player.money + "</th> </tr>";
-        $("#bodytbl").html(row);//заполняем "статбар" игрока
         createButtons();
         actionsHundler();
-        intervalStatus = setInterval(getStatus, 3000);
-        intervalRoom = setInterval(getRoom, 3000, player.id_room);
     }
 
-    this.stopGetStatus = function () {
-        clearInterval(intervalStatus);
-        clearInterval(intervalRoom);
+    this.getType = function () {
+        return player.type;
+    };
+
+    this.getStatus = function (data) {
+        if (data === "жопят") {
+            inFight();
+            var list = "<ul id='listSec'></ul>"
+            $('#screen').append(list);
+            timer.start(10, function (sec) {
+                var elem = "<ol>" + "Вам бросили предъяву, у вас есть 10 секунд на вызов адвоката: " + sec + "</ol>";
+                $('#listSec').append(elem);
+            }, function () {
+                $('#listSec').remove();
+                $('#command').val("");
+                toKnowResultThief();
+                startGettingStatus();
+            });
+            return;
+        }
+        if (data === "терпите") {
+            changeType();
+            return;
+        }
+        normal();
     };
 
     init();
