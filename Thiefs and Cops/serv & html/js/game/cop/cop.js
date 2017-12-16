@@ -211,6 +211,7 @@
         $('#payTax').prop('disabled', true);
         $('#inspect').prop('disabled', true);
         $('#grieve').prop('disabled', true);
+        $('#witnesses').prop('disabled', false);
         $('#logoutCop').prop('disabled', true);
     }
     function normal() {
@@ -218,6 +219,7 @@
         $('#payTax').prop('disabled', false);
         $('#inspect').prop('disabled', false);
         $('#grieve').prop('disabled', false);
+        $('#witnesses').prop('disabled', true);
         $('#logoutCop').prop('disabled', false);
     }
 
@@ -226,6 +228,7 @@
         $('#payTax').on('click', giveMoney);
         $('#inspect').on('click', inspect);
         $('#grieve').on('click', grieve);
+        $('#witnesses').on('click', callWitnesses);
     }
 
     function init() {
