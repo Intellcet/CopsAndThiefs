@@ -8,6 +8,8 @@
 
     var changeType = (options && options.callbacks && options.callbacks.changeType instanceof Function) ? options.callbacks.changeType : function () { };
 
+    var span = "";
+
     function createButtons() {
         $('#actions').empty();
         $('#actions').append('<input id="suffer"      type="button" class="btn btn-secondary action-buttons" value="Потерпеть" />');
@@ -33,7 +35,7 @@
                     room = data.room;
                     var players = data.players;//игроки в комнате
                     var nicknames = data.nicknames;//их ники
-                    var span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
+                    span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
                     $('#nameRoom').append(span);//выводим название комнаты
                     for (var i = 0; i < nicknames.length; i++) {
                         var elem = '<p style="margin-bottom: 5px;">' + nicknames[i] + '</p>';
@@ -48,13 +50,13 @@
         if (id_room) {
             server.getWays(id_room).done(function (data) {
                 if (data) {
-                    $('#screen').empty();
-                    var span = "<span class='spanConst'>Можно выйти в следующие комнаты: </span><br />";
-                    $('#screen').append(span);
+                    $('#logs').empty();
+                    span = "<span class='spanConst'>Можно выйти в следующие комнаты: </span><br />";
+                    $('#logs').append(span);
                     var ul = "<ul id='list'></ul>";
-                    $('#screen').append(ul);
+                    $('#logs').append(ul);
                     for (var i = 0; i < data.rooms.length; i++) {
-                        var list = "<li>" + data.rooms[i] + "</li>";
+                        var list = "<li>" + data.rooms[i].name + "</li>";
                         $('#list').append(list);
                     }
                 }
@@ -66,6 +68,12 @@
         var name_room = $('#command').val();//получаем значение с командной строки, куда двигаться
         server.action('toRoom', null, null, name_room).done(function (data) {
             if (data) {
+                if (typeof (data) === 'string') {
+                    span = "<span id='span'>" + data + "</span>";
+                    $('#screen').append(span);
+                    $('#command').val("");
+                    setTimeout(function () { $('#span').remove(); }, 2000);
+                }
                 getRoom(data.action.id);
                 getWays(data.action.id);
                 $('#command').val("");
@@ -76,13 +84,19 @@
     function suffer() {//страдаем за терпилу
         server.action('suffer', null, null).done(function (data) {
             if (data) {
+                if (typeof (data) === 'string') {
+                    span = "<span id='span'>" + data + "</span>";
+                    $('#screen').append(span);
+                    $('#command').val("");
+                    setTimeout(function () { $('#span').remove(); }, 2000);
+                }
                 if (typeof (data.action) === 'object') {
-                    if (data.action.money <= 1000) {
+                    if (data.action.money <= 2000) {
                         fillStatBar(data);
                     }
                 }
                 if (typeof (data.action) === 'string') {
-                    var span = "<span id='span'>" + data.action + "</span>"
+                    span = "<span id='span'>" + data.action + "</span>";
                     $('#screen').append(span);
                     changeClass();
                     setTimeout(function () { $('#span').remove(); }, 2000);
@@ -96,7 +110,7 @@
         if (type) {
             changeType(type);
         } else {
-            var span = "<span id='span'>" + "Введите тип!" + "</span>";
+            span = "<span id='span'>" + "Введите тип!" + "</span>";
             $('#screen').append(span);
             setTimeout(function () { $('#span').remove(); }, 2000);
         }
@@ -141,12 +155,12 @@
 
     this.getStatus = function (data) {
         if (data === "жопят") {
-            var span = "<span id='span'>" + "Вас жопят!" + "</span>";
+            span = "<span id='span'>" + "Вас жопят!" + "</span>";
             $('#screen').append(span);
             setTimeout(function () { $('#span').remove(); }, 2000);
             return;
         }
-    }
+    };
 
     init();
 }

@@ -10,6 +10,8 @@
     var startGettingStatus = (options && options.callbacks && options.callbacks.startGettingStatus instanceof Function) ? options.callbacks.startGettingStatus : function () { };
     var changeType = (options && options.callbacks && options.callbacks.changeType instanceof Function) ? options.callbacks.changeType : function () { };
 
+    var span = "";
+
     function createButtons() {
         $('#actions').empty();
         $('#actions').append('<input id="movesCop"  type="button" class="btn btn-secondary action-buttons" value="Перейти" />');
@@ -35,7 +37,7 @@
                     room = data.room;
                     var players = data.players;//игроки в комнате
                     var nicknames = data.nicknames;//их ники
-                    var span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
+                    span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
                     $('#nameRoom').append(span);//выводим название комнаты
                     for (var i = 0; i < nicknames.length; i++) {
                         var elem = '<p style="margin-bottom: 5px;">' + nicknames[i] + '</p>';
@@ -50,13 +52,13 @@
         if (id_room) {
             server.getWays(id_room).done(function (data) {
                 if (data) {
-                    $('#screen').empty();
-                    var span = "<span class='spanConst'>Можно выйти в следующие комнаты: </span><br />";
-                    $('#screen').append(span);
+                    $('#logs').empty();
+                    span = "<span class='spanConst'>Можно выйти в следующие комнаты: </span><br />";
+                    $('#logs').append(span);
                     var ul = "<ul id='list'></ul>";
-                    $('#screen').append(ul);
+                    $('#logs').append(ul);
                     for (var i = 0; i < data.rooms.length; i++) {
-                        var list = "<li>" + data.rooms[i] + "</li>";
+                        var list = "<li>" + data.rooms[i].name + "</li>";
                         $('#list').append(list);
                     }
                 }
@@ -68,6 +70,12 @@
         var name_room = $('#command').val();//получаем значение с командной строки, куда двигаться
         server.action('toRoom', null, null, name_room).done(function (data) {
             if (data) {
+                if (typeof (data) === 'string') {
+                    span = "<span id='span'>" + data + "</span>";
+                    $('#screen').append(span);
+                    $('#command').val("");
+                    setTimeout(function () { $('#span').remove(); }, 2000);
+                }
                 player = data.player;
                 getRoom(data.action.id);
                 getWays(data.action.id);
@@ -81,8 +89,14 @@
         if (!isNaN(money)) {
             server.action('giveaway', money).done(function (data) {
                 if (data) {
+                    if (typeof (data) === 'string') {
+                        span = "<span id='span'>" + data + "</span>";
+                        $('#screen').append(span);
+                        $('#command').val("");
+                        setTimeout(function () { $('#span').remove(); }, 2000);
+                    }
                     if (typeof (data.action) === 'string') {
-                        var span = "<span id='span'>" + data.action + "</span>";
+                        span = "<span id='span'>" + data.action + "</span>";
                         $('#screen').append(span);
                         $('#command').val("");
                         setTimeout(function () { $('#span').remove(); }, 2000);
@@ -94,7 +108,7 @@
                 }
             });
         } else {
-            var span = "<span id='span'>" + "Вы ввели не числовое значение!" + "</span>";
+            span = "<span id='span'>" + "Вы ввели не числовое значение!" + "</span>";
             $('#screen').append(span);
             $('#command').val("");
             setTimeout(function () { $('#span').remove(); }, 2000);
@@ -107,12 +121,18 @@
             server.action('callWitnesses', money).done(function (data) {
                 if (data) {
                     $('#command').val('');
+                    if (typeof (data) === 'string') {
+                        span = "<span id='span'>" + data + "</span>";
+                        $('#screen').append(span);
+                        $('#command').val("");
+                        setTimeout(function () { $('#span').remove(); }, 2000);
+                    }
                     if (typeof (data.action) === 'string') {
-                        var span = "<span id='span'>" + data.action + "</span>";
+                        span = "<span id='span'>" + data.action + "</span>";
                         $('#screen').append(span);
                         setTimeout(function () { $('#span').remove(); }, 2000);
                     } else {
-                        var span = "<span id='span'>" + "Вы нашли свидетелей!" + "</span>";
+                        span = "<span id='span'>" + "Вы нашли свидетелей!" + "</span>";
                         $('#screen').append(span);
                         fillStatBar(data);
                         setTimeout(function () { $('#span').remove(); }, 2000);
@@ -126,14 +146,20 @@
     function inspect() {//осматриваем комнату в поисках вора
         server.action('inspect').done(function (data) {
             if (data) {
+                if (typeof (data) === 'string') {
+                    span = "<span id='span'>" + data + "</span>";
+                    $('#screen').append(span);
+                    $('#command').val("");
+                    setTimeout(function () { $('#span').remove(); }, 2000);
+                }
                 if (typeof (data.action) !== 'string') {
                     fillStatBar(data);
-                    var span = "<span id='span'>" + "Вы немного увеличили опыт!" + "</span>";
+                    span = "<span id='span'>" + "Вы немного увеличили опыт!" + "</span>";
                     $('#screen').append(span);
                     $('#command').val("");
                     setTimeout(function () { $('#span').remove(); }, 2000);
                 } else {
-                    var span = "<span id='span'>" + "Кажется, вы нашли вора( " + data.action + " )" + "</span>";
+                    span = "<span id='span'>" + "Кажется, вы нашли вора( " + data.action + " )" + "</span>";
                     $('#screen').append(span);
                     setTimeout(function () { $('#span').remove(); }, 2000);
                 }
@@ -160,14 +186,14 @@
             if (data) {
                 if (typeof (data.action) === 'object') {
                     if (player.exp <= data.action.exp) {
-                        var span = "<span id='span'>" + "Вас пытались пожопить, но не смогли!" + "</span>";
+                        span = "<span id='span'>" + "Вас пытались пожопить, но не смогли!" + "</span>";
                         $('#screen').append(span);
                         $('#command').val("");
                         fillStatBar(data);
                         setTimeout(function () { $('#span').remove(); }, 2000);
                     }
                     if (player.exp <= data.action.exp) {
-                        var span = "<span id='span'>" + "Вас пожопили!" + "</span>";
+                        span = "<span id='span'>" + "Вас пожопили!" + "</span>";
                         $('#screen').append(span);
                         $('#command').val("");
                         fillStatBar(data);
@@ -182,6 +208,12 @@
         var nickname = $('#command').val();
         server.action('grieve', null, nickname).done(function (data) {
             if (data) {
+                if (typeof (data) === 'string') {
+                    span = "<span id='span'>" + data + "</span>";
+                    $('#screen').append(span);
+                    $('#command').val("");
+                    setTimeout(function () { $('#span').remove(); }, 2000);
+                }
                 if (typeof (data.action) === 'boolean') {
                     var list = "<ul id='listSec'></ul>";
                     $('#screen').append(list);
@@ -197,7 +229,7 @@
                         });
                 }
                 if (typeof (data.action) === 'string') {
-                    var span = "<span id='span'>" + data.action + "</span>";
+                    span = "<span id='span'>" + data.action + "</span>";
                     $('#screen').append(span);
                     $('#command').val("");
                     setTimeout(function () { $('#span').remove(); }, 2000);
@@ -251,7 +283,7 @@
         }
         if (data === "жопят") {
             inFight();
-            var list = "<ul id='listSec'></ul>"
+            var list = "<ul id='listSec'></ul>";
             $('#screen').append(list);
             timer.start(10, function (sec) {
                 var elem = "<ol>" + "Вам бросили предъяву, подождите 10 секунд: " + sec + "</ol>";
@@ -264,7 +296,7 @@
             });
         }
         normal();
-    }
+    };
 
     init();
 }

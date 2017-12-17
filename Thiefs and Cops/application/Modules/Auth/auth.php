@@ -6,7 +6,13 @@
 
         public function registerUser($login, $pass, $nickname) {
             if ($login && $pass && $nickname){
-                return $this->db->setUser($login, $pass, $nickname);
+                $this->db->setUser($login, $pass, $nickname);
+                $user = $this->db->getUser($login, $pass);
+                if ($user) {
+                    $this->db->setPlayer($user->id, 'human', 'терпите');
+                    return true;
+                }
+                return false;
             }
             return false;
         }

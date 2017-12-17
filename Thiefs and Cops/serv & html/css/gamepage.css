@@ -1,7 +1,11 @@
 body
 {
     padding: 5px;
-    background-image: url(../images/brick.jpg);
+    height: 100%;
+}
+
+html {
+    height: 100%;
 }
 
 
@@ -11,7 +15,7 @@ body
     margin-bottom: 3px;
     background:#eee;
     width: auto;
-    height: 50vh;
+    height: 50%;
     border-radius: 10px;
 }
 
@@ -20,7 +24,7 @@ body
     background:#eee;
     margin-left: 10px;
     width: 95%;
-    height:40vh;
+    height: 50%;
     overflow:auto;
 }
 
@@ -29,14 +33,19 @@ body
     border: 1px solid #fff;
     background:#eee;
     width: auto;
-    height: 100%;
+    height: 50%;
     border-radius: 10px;
+
+
 }
 
 #chat
 {
     padding:0px;
+    height: 60%;
 }
+
+
 
 #letters
 {
@@ -45,7 +54,7 @@ body
     margin-left: 10px;
     margin-bottom: 10px;
     width: 95%;
-    height:31vh;
+    height: 80%;
     overflow-x:hidden;
     overflow-y:auto;
 
@@ -60,18 +69,28 @@ body
     height: 100%;
     width: auto;
     overflow: auto;
-    margin-bottom: 10px;
     border-radius: 10px;
 }
 .screen
 {
     background-color:#aaa;
-    max-height: 80%
+    width: 80%;
+    height: 100%;
+    border-radius: 10px;
+    padding: 10px;
+}
 
+#logs {
+    background-color:#aaa;
+    width: 20%;
+    height: 100%;
+    border-radius: 10px;
+    padding: 10px;
+    margin-left: 5px;
 }
 #command
 {
-    margin-top: 10px;
+
     min-width: 50vw;
 
 }
@@ -95,43 +114,54 @@ body
 #input {
     min-width: 80%;
     margin: 10px;
+
 }
 
 #gamePage {
     margin-top: 0px;
     border-top: 0px;
     padding-top: 0px;
+    height: 100%;
 }
 
 #room {
-    margin-top: 1px; max-height: 300px; width: 100%
+    margin-top: 1px;
+    max-height: 300px;
+    width: 100%
 }
 
 #gameHeader {
     margin: 0px;
 }
 
-.screen {
-    width: 100%;
-    height: 65vh;
-    border-radius: 10px;
 
-}
 
 #statBar {
     margin-left: 5px;
     margin-right: 5px;
     margin-bottom: 0px;
     margin-top: 5px;
+
 }
 
 #actions {
     margin-bottom: 0px;
     margin-top: 5px;
+    display:flex;
+    justify-content: space-around;
+    padding: 10px;
+    height: 15%;
 }
 
 .action-buttons {
-    margin: 3%;
+    margin-top: auto;
+    margin-bottom: auto;
+
+    margin-right: auto;
+    margin-left: auto;
+
+
+
 }
 
 #info {
@@ -147,4 +177,54 @@ body
     border-radius: 10px;
 }
 
+.firstFlex {
+    height: 100%;
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
 
+
+}
+
+.firstFlexBlocks {
+
+}
+
+.secondFlex {
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.thirdFlex {
+    height: 100%;
+    display:flex;
+    flex-direction: column;
+
+}
+
+.fourthFlex {
+    display:flex;
+    height: 65%;
+}
+
+.inputClass {
+    padding: 5px;
+}
+
+.gameWindow {
+    height: 100%;
+}
+
+.form-group {
+    margin-bottom: 0px;
+}
+.thief {
+    background-image: url(../images/reshetka.jpg);
+}
+.cop {
+    background-image: url(../images/police.jpg);
+}
+.human {
+    background-image: url(../images/brick.jpg);
+}

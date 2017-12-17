@@ -13,7 +13,7 @@
     this.start = function (seconds, everySecondCb, finishCb) {
         clear();
         if (seconds > 0) {
-            count = seconds
+            count = seconds;
             interval = setInterval(function () {
                 count--;
                 everySecondCb(count);
@@ -60,6 +60,16 @@ function Game(options) {
         }
     }
 
+    function setImg(type) {
+        if (type) {
+            $('body').removeClass('thief');
+            $('body').removeClass('human');
+            $('body').removeClass('cop');
+            $('body').removeClass('signIn');
+            $('body').addClass(type);
+        }        
+    }
+
     function getRoom(id_room) {//получить данные о комнате
         if(id_room) {
             server.getRoom(id_room).done(function (data) {
@@ -84,13 +94,13 @@ function Game(options) {
         if (id_room) {
             server.getWays(id_room).done(function (data) {
                 if (data) {
-                    $('#screen').empty();
+                    $('#logs').empty();
                     var span = "<span class='span'>Можно выйти в следующие комнаты: </span><br />";
-                    $('#screen').append(span);
+                    $('#logs').append(span);
                     var ul = "<ul id='list'></ul>";
-                    $('#screen').append(ul);
+                    $('#logs').append(ul);
                     for (var i = 0; i < data.rooms.length; i++) {
-                        var list = "<li>" + data.rooms[i] + "</li>";
+                        var list = "<li>" + data.rooms[i].name + "</li>";
                         $('#list').append(list);
                     }
                 }
@@ -104,12 +114,15 @@ function Game(options) {
                 $("#bodytbl").empty();
                 //проверка на тип
                 if (data.player.type === "thief") {
+                    setImg("thief");
                     player = new Thief({ data: data, server: server, callbacks: { startGettingStatus: startGettingStatus, changeType: changeType } });
                 }
                 if (data.player.type === "cop") {
+                    setImg("cop");
                     player = new Cop({ data: data, server: server, callbacks: { changeType: changeType } });
                 }
                 if (data.player.type === "human") {
+                    setImg("human");
                     player = new Human({ data: data, server: server, callbacks: { changeType: changeType } });
                 }
                 getRoom(data.player.id_room);
@@ -136,6 +149,7 @@ function Game(options) {
             case "thief":
                 $('#logoutThief').on('click', function () {
                     server.finishGame().done(function () {
+                        setImg(type);
                         logout();
                     });
                     off(type);
@@ -144,6 +158,7 @@ function Game(options) {
             case "cop":
                 $('#logoutCop').on('click', function () {
                     server.finishGame().done(function () {
+                        setImg(type);
                         logout();
                     });
                     off(type);
@@ -152,6 +167,7 @@ function Game(options) {
             case "human":
                 $("#logoutHuman").on('click', function () {
                     server.finishGame().done(function () {
+                        setImg(type);
                         logout();
                     });
                     off(type);
@@ -162,7 +178,7 @@ function Game(options) {
 
     function startGettingStatus() {
         intervalStatus = setInterval(getStatus, 3000);
-    };
+    }
     
     function getStatus() {
         server.getStatus().done(function (data) {
@@ -189,7 +205,6 @@ function Game(options) {
 
     function changeType(type) {
         off(player.getType());
-        console.log(1);
         clearInterval(intervalStatus);
         server.action("changeType", null, null, null, (type) ? type : null).done(function (data) {
             if (data.action) {
@@ -197,7 +212,7 @@ function Game(options) {
                 startGame();
             }
         });
-    };
+    }
 
     this.init = function () {
         startGame();

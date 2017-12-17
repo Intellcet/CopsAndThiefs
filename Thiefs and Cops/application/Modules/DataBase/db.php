@@ -23,8 +23,8 @@
             mysqli_close($this->host);
         }
 
-        private function isUniqUser($login) {//проверка уникальности пользователя по логину
-            $query = "SELECT * " . "FROM user " . "WHERE login='" . $login . "'";
+        private function isUniqUser($nickname) {//проверка уникальности пользователя по логину
+            $query = "SELECT * " . "FROM user " . "WHERE nickname='" . $nickname . "'";
             $result = mysqli_query($this->host, $query);
             $res = null;
             while ($row = mysqli_fetch_object($result)) {
@@ -75,7 +75,7 @@
         }
 
         public function setUser($login, $password, $nickname) {//добавляем в бд пользователя
-            if ($this->isUniqUser($login)) {//если пользователь уникален (проверка по логину)
+            if ($this->isUniqUser($nickname)) {//если пользователь уникален (проверка по нику)
                 $query = "INSERT INTO user (login, password, nickname) VALUES ('" . $login . "', " . $password . ", '" . $nickname . "')";
                 mysqli_query($this->host, $query);
                 return true;
@@ -202,7 +202,7 @@
         }
 
         public function getWay($id_from, $id_to) {//получаем путь
-             $query = "SELECT * " . "FROM way " . "WHERE id_from=" . $id_from . " AND id_to=". $id_to ."";
+             $query = "SELECT * " . "FROM way " . "WHERE id_from=" . $id_from . " AND id_to=". $id_to;
              $result = mysqli_query($this->host, $query);
              $res = null;
              while ($row = mysqli_fetch_object($result)) {
@@ -213,7 +213,7 @@
         }
 
         public function getWays($id_from) {//получаем путь
-            $query = "SELECT * " . "FROM way " . "WHERE id_from=" . $id_from;
+            $query = "SELECT name " . "FROM way, room " . "WHERE id_from=" . $id_from . " AND room.id = way.id_to";
             $result = mysqli_query($this->host, $query);
             $res = Array();
             while ($row = mysqli_fetch_object($result)) {
@@ -230,7 +230,7 @@
             }
         }
 
-        public function getPlayer($id_user){//получаем игрока
+        public function getPlayer($id_user) {//получаем игрока
             $query = "SELECT * " . "FROM player " . "WHERE id_user=" . $id_user . "";
             $result = mysqli_query($this->host, $query);
             $res = null;
@@ -369,8 +369,8 @@
             return mysqli_query($this->host, $query);
         }
 
-		public function getAction($id) {//получить действие
-            $query = "SELECT * " . "FROM action " . "WHERE id=" . $id;
+		public function getAction($id_player) {//получить действие
+            $query = "SELECT * " . " FROM action " . " WHERE id_player = " . $id_player . " AND date_time > FROM_UNIXTIME(UNIX_TIMESTAMP() - 5)";
             $result = mysqli_query($this->host, $query);
             $res = null;
             while ($row = mysqli_fetch_object($result)) {

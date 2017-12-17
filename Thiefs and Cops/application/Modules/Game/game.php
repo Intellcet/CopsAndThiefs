@@ -36,7 +36,8 @@
             ),
             'human' => Array(
                 'rangs' => Array(
-                    '1' => 'Студент'
+                    '1' => 'Школьник', '2' => 'Студент', '3' => 'Стажёр', '4' => 'Работяга с завода',
+                    '5' => 'Офисный работяга', '6' => 'Менеджер низкого звена', '7' => 'Менеджер среднего звена', '8' => 'Человек'
                 ),
                 'actions' => Array(
                     'suffer' => 'suffer',
@@ -47,14 +48,25 @@
         );
 
         private function setRang($exp) {
-            if ($exp <= 100) {  return 1;   }
-            if ($exp <= 200) {  return 2;   }
-            if ($exp <= 300) {	return 3;   }
-            if ($exp <= 400) {	return 4;   }
-            if ($exp <= 500) {	return 5;   }
-            if ($exp <= 600) {	return 6;   }
-            if ($exp <= 700) {	return 7;   }
-            if ($exp >= 701) {	return 8;   }
+            if ($exp <= 2500)   {   return 1;   }
+            if ($exp <= 5000)   {   return 2;   }
+            if ($exp <= 7500)   {	return 3;   }
+            if ($exp <= 10000)  {	return 4;   }
+            if ($exp <= 20000)  {	return 5;   }
+            if ($exp <= 40000)  {	return 6;   }
+            if ($exp <= 80000)  {	return 7;   }
+            if ($exp >= 120000) {	return 8;   }
+        }
+
+        private function setRangHuman($money){
+            if ($money <= 250)  {   return 1;   }
+            if ($money <= 500)  {   return 2;   }
+            if ($money <= 750)  {   return 3;   }
+            if ($money <= 1000) {   return 4;   }
+            if ($money <= 1250) {   return 5;   }
+            if ($money <= 1500) {   return 6;   }
+            if ($money <= 1750) {   return 7;   }
+            if ($money >= 2000) {   return 8;   }
         }
 
         private function giveaway($param) {//сдать деньги в общак//заплатить налоги(!!!)
@@ -82,11 +94,14 @@
                     $victim = $this->db->getPlayerByNickname($param['nickname']);
                     if ($victim) {
                         if ($victim->type === 'thief' || $victim->type === 'human') {
-                            $money = rand(1, $victim->money);
+                            $money = rand(0, $victim->money);
                             $victimMoney = $victim->money - $money;
                             $param['player']->money += $money;
+                            $exp = round($money / 2) + $param['player']->exp;
                             $this->db->setMoney($victim->id, $victimMoney);
                             $this->db->setMoney($param['player']->id, $param['player']->money);
+                            $this->db->setExp($param['player']->id, $exp);
+                            $this->db-setRang($param['player']->id, $this->setRang($exp));
                             return $this->db->getPlayer($param['user']->id);
                         } else {
                             return "Прёшь против копа!!!";
@@ -104,34 +119,25 @@
                 $room = $this->db->getRoom($param['player']->id_room);
                 $data = new stdClass();
                 if ($room->money) {
-                    $stolenMoney = rand(0, 1000);
+                    $stolenMoney = rand(0, 100);
                     $room->money -= $stolenMoney;
                     if ($room->money >= 0) {//проверка на нулевой баланс комнаты
                         $param['player']->money += $stolenMoney;
                         $this->db->updateMoneyRoom($param['player']->id_room, $room->money);
                         $this->db->setMoney($param['player']->id, $param['player']->money);
-                        if ($stolenMoney >= 100) {
-                            while ($stolenMoney >= 100) {
-                                $stolenMoney /= 100;
-                            };
-                            $param['player']->exp += round($stolenMoney);
-                            $this->db->setExp($param['player']->id, $param['player']->exp);
-                            $data->rang = $this->TYPE[$param['player']->type]['rangs'][$this->setRang($param['player']->exp)];
-                            $this->db->setRang($param['player']->id, $this->setRang($param['player']->exp));
-                            $data->player = $this->db->getPlayer($param['user']->id);
-                        }
+                        $data->player = $this->db->getPlayer($param['user']->id);
                         return $data;
                     } else {
-                        $param['player']->money += $room->money;
-                        $this->db->updateMoneyRoom($param['player']->id_room, 0);
+                        $param['player']->money += $stolenMoney;
+                        $this->db->updateMoneyRoom($room->id, 0);
                         $this->db->setMoney($param['player']->id, $param['player']->money);
-                        $data->rang = $this->TYPE[$param['player']->type]['rangs'][$this->setRang($param['player']->exp)];
-                        $this->db->setRang($param['player']->id, $this->setRang($param['player']->exp));
                         $data->player = $this->db->getPlayer($param['user']->id);
                         return $data;
                     }
+                } else {
+                    $this->db->updateMoneyRoom($room->id, 100500);
+                    return "Красть нечего!";
                 }
-                return "Красть нечего!";
             }
             return false;
         }
@@ -272,23 +278,15 @@
             if ($param['player']->status != "жопит" || $param['player']->status != "жопят") {
                 $room = $this->db->getRoom($param['player']->id_room);
                 $players = $this->db->getPlayersFromRoom($room->id);
-                $monetka = rand(0, 100);
-                if($monetka >= 90) {//если монетка, то ищем воров
+                $coin = rand(0, 100);
+                if($coin >= 90) {//если монетка, то ищем воров
                     for ($i = 0; $i < count($players); $i++) {
                         if ($players[$i]->type === "thief"){//если находим, выводим первого попавшегося
                             return $this->db->getUserByID($players[$i]->id)->nickname;
                         }
                     }
-                    $exp = $monetka;
-                    $param['player']->exp += $exp;
-                    $this->db->setExp($param['player']->id, $param['player']->exp);
-                    $this->db->setRang($param['player']->id, $this->setRang($param['player']->exp));
-                    return true;
                 }
-                $exp = $monetka;
-                $param['player']->exp += $exp;
-                $this->db->setExp($param['player']->id, $param['player']->exp);
-                $this->db->setRang($param['player']->id, $this->setRang($param['player']->exp));
+                $this->db->setMoney($param['player']->id, $coin);
                 return true;
             }
         }
@@ -393,10 +391,7 @@
                 $result->rooms = Array();
                 $room = $this->db->getRoom($id);
                 if ($room) {
-                    $ways = $this->db->getWays($room->id);
-                    for ($i = 0; $i < count($ways); $i++) {
-                        $result->rooms[] = $this->db->getRoom($ways[$i]->id_to)->name;
-                    }
+                    $result->rooms = $this->db->getWays($room->id);
                 }
                 return $result;
             }
@@ -417,6 +412,12 @@
             if ($token) {
                 $user = $this->db->getUserByToken($token);
                 $player = $this->db->getPlayer($user->id);
+                $lastAction = $this->db->getAction($player->id);
+                if ($lastAction) {
+                    if ($lastAction->type === $action) {
+                        return "Отдохни немного или сделай что-нибудь еще!!!";
+                    }
+                }
                 if ($player && $action) {
                     $answer = new stdClass();
                     $param = Array(
@@ -425,10 +426,10 @@
                     if ($this->TYPE[$player->type]['actions'][$action]) {
                         $answer->action = $this->{$this->TYPE[$player->type]['actions'][$action]}($param);
                     }
-                    //$this->db->setAction($player->id, null, $action, $answer->{'action'});
+                    $this->db->setAction($player->id, null, $action);
                     if ($answer->action != false) {
                         $answer->player = $this->db->getPlayer($user->id);
-                        $answer->rang = $this->TYPE[$answer->player->type]['rangs'][$this->setRang($answer->player->exp)];
+                        $answer->rang = $this->TYPE[$answer->player->type]['rangs'][$this->setRangHuman($answer->player->money)];
                         $answer->nickname = $user->nickname;
                         return $answer;
                     }

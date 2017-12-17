@@ -1,12 +1,19 @@
-@import url(http://fonts.googleapis.com/css?family=Roboto:400);
+
 body {
-  background-color:#fff;
   -webkit-font-smoothing: antialiased;
   font: normal 14px Roboto,arial,sans-serif;
 }
 
+.signIn {
+  background-image: url(../images/brick.jpg);
+}
+
 #validation {
   padding: 25px;
+}
+
+#registrationSpan:hover {
+    background-color: #C0C0C0;
 }
 
 .form-login {

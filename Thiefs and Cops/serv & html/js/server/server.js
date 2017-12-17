@@ -25,6 +25,9 @@
     this.logout = function () {
         return getData({ method: 'logout', token: token });
     };
+    this.registration = function (login, pass, nickname) {
+        return getData({ method: 'registerUser', login: login, pass: pass, nickname: nickname});
+    };
     this.startGame = function () {
         return getData({ method: 'startGame', token: token });
     };
@@ -54,5 +57,5 @@
     };
     this.action = function (action, money, nickname, name_room, type) {
         return getData({ method: 'action', token: token, action: action, money: money, nickname: nickname, name_room: name_room, type: type });
-    }
+    };
 }
