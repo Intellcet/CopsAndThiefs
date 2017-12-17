@@ -65,6 +65,7 @@
             showBlock('registration');
             $('.wrapper').empty();
             $('#registrationBtn').on('click', function (event) {
+                $('.wrapper').empty();
                 var loginReg = $('#loginReg').val();
                 var passReg = $('#passReg').val();
                 var nickname = $('#nickname').val();

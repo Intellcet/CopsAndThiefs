@@ -24,18 +24,32 @@
     <div class="row">
         <div class="col-md-offset-5 col-md-3">
             <div class="form-login">
-                <h4>Sign in</h4>
-                <input type="name" id="login" class="form-control input-sm chat-input" placeholder="username" required autofocus/> <br />
+                <h4>Вход</h4>
+                <input type="name" id="login" class="form-control input-sm chat-input" placeholder="login" required autofocus/> <br />
                 <input type="password" id="pass" class="form-control input-sm chat-input" placeholder="password" required/> <br />
-                <div class="wrapper">
-                    <span class="group-btn">
-                        <button id="signIn" class="btn btn-lg btn-secondary btn-block" style="margin-bottom:3px;">Вход</button>
-                    </span>
-                </div>
+                <button id="signIn" class="btn btn-lg btn-secondary btn-block" style="margin-bottom:3px;">Войти</button>
+                <span id="registrationSpan">зарегистрироваться?</span>
+                <div class="wrapper"></div>
             </div>
         </div>
     </div>
 </div>
+
+    <div id="registration" class="container">
+        <div class="row">
+            <div class="col-md-offset-5 col-md-3">
+                <div class="form-login">
+                    <h4>Регистрация</h4>
+                    <input type="name" id="loginReg" class="form-control input-sm chat-input" placeholder="login" required autofocus /> <br />
+                    <input type="name" id="nickname" class="form-control input-sm chat-input" placeholder="nickname" required /> <br />
+                    <input type="password" id="passReg" class="form-control input-sm chat-input" placeholder="password" required /> <br />
+                    <input type="password" id="passAgain" class="form-control input-sm chat-input" placeholder="password again" required /> <br />
+                    <button id="registrationBtn" class="btn btn-lg btn-secondary btn-block" style="margin-bottom:3px;">Зарегистрироваться</button>
+                    <div class="wrapper"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="gamePage">
         <div class="col-md-3">
