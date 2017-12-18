@@ -429,7 +429,11 @@
                     $this->db->setAction($player->id, null, $action);
                     if ($answer->action != false) {
                         $answer->player = $this->db->getPlayer($user->id);
-                        $answer->rang = $this->TYPE[$answer->player->type]['rangs'][$this->setRangHuman($answer->player->money)];
+                        if ($answer->player->type === 'human'){
+                            $answer->rang = $this->TYPE[$answer->player->type]['rangs'][$this->setRangHuman($answer->player->money)];
+                        } else {
+                            $answer->rang = $this->TYPE[$answer->player->type]['rangs'][$this->setRang($answer->player->exp)];
+                        }
                         $answer->nickname = $user->nickname;
                         return $answer;
                     }

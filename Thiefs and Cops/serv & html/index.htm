@@ -52,70 +52,65 @@
     </div>
 
     <div id="gamePage">
-        <div class="col-md-3">
-                <div class="WhoInRoom">
-                    <div class="panel panel-default radThings">
-                        <div class="panel-heading radThings">
-                            <span class="panel-title">Кто в комнате</span>
-                            <span id="nameRoom" class="panel-title"></span>
-                        </div>
-                    </div>
-                    <div class="Players">
-                        <div id="room" class="panel-body"></div>
+        <div class="col-md-3 firstFlex">
+            <div class="WhoInRoom firstFlexBlocks">
+                <div class=" panel panel-default radThings">
+                    <div class="panel-heading radThings">
+                        <span class="panel-title">Кто в комнате</span>
+                        <span id="nameRoom" class="panel-title"></span>
                     </div>
                 </div>
-
-                <div class="Chat">
-                    <div class="panel panel-default radThings">
-                        <div class="panel-heading radThings">
-                            <h3 class="panel-title">Чатик</h3>
-                        </div>
-                    </div>
-                    <div class="chatBox">
-                        <div id="chat">
-                            <div id="letters"> </div>
-                            <div  id="input" class="input-group">
-                                <input  id="chatting" type="text" class="form-control" placeholder="Пишите сюда">
-                                <span class="input-group-btn">
-                                        <button id="send" class="btn btn-secondary" type="button">Send</button>
-                                    </span>
-                            </div>
-                        </div>
+                <div class="Players">
+                    <div id="room" class="panel-body"></div>
+                </div>
+            </div>
+            <div class="Chat firstFlexBlocks secondFlex">
+                <div class="panel panel-default radThings">
+                    <div class="panel-heading radThings">
+                        <h3 class="panel-title">Чатик</h3>
                     </div>
                 </div>
+                <div id="chat" class="chatBox">
+                    <div id="letters">
+                    </div>
+                </div>
+                <div id="input" class="input-group">
+                    <input id="chatting" type="text" class="form-control" placeholder="Пишите сюда">
+                    <span class="input-group-btn">
+                        <button id="send" class="btn btn-secondary" type="button">Send</button>
+                    </span>
+                </div>
+            </div>
         </div>
-
-        <div class="col-md-9">
-                <div id="game">
-                    <div id="gameHeader" class="panel panel-default radThings">
-                        <div class="panel-heading radThings">
-                            <h3 class="panel-title">Игра</h3>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <div id="screen" class="container screen">
-
-                        </div>
-                        <!--<div id="info" class="container">
-                            Здесь всё
-                        </div>-->
-
-                        <div  class="input-group">
-                            <input id="command" type="text" class="form-control" placeholder=">Вводим команды(подтверждение/выбор)" aria-label=">Вводим команды(подтверждение/выбор)">
-                            <span class="input-group-btn">
-                                    <button id="cmndbtn" class="btn btn-secondary" type="button">Ok</button>
-                                </span>
-                        </div>
-                    </div>
-                    <div id="statBar">
-                        <table class="table table-md">
-                            <tbody id="bodytbl">
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="actions" class="container-fluid">
+        <div class="col-md-9 gameWindow">
+            <div id="game" class="thirdFlex">
+                <div id="gameHeader" class="panel panel-default radThings">
+                    <div class="panel-heading radThings">
+                        <h3 class="panel-title">Игра</h3>
                     </div>
                 </div>
+                <div class="panel-body fourthFlex">
+                    <div id="screen" class="container screen">
+                    </div>
+                    <div id="logs" class="container">
+                    </div>
+                    <!--<div id="info" class="container">
+                        Здесь всё
+                    </div>-->
+
+                </div>
+                <div class="form-group radThings inputClass">
+                    <input id="command" class="form-control radThings" type="text" placeholder=">Вводим команды(подтверждение/выбор)">
+                </div>
+
+                <div id="statBar">
+                    <table class="table table-md">
+                        <tbody id="bodytbl"></tbody>
+                    </table>
+                </div>
+                <div id="actions">
+                </div>
+            </div>
         </div>
     </div>
 </body>

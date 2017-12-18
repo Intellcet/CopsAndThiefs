@@ -77,8 +77,8 @@
                     setTimeout(function () { $('#span').remove(); }, 2000);
                 }
                 player = data.player;
-                getRoom(data.action.id);
-                getWays(data.action.id);
+                getRoom(data.action.id_room);
+                getWays(data.action.id_room);
                 $('#command').val("");
             }
         });
