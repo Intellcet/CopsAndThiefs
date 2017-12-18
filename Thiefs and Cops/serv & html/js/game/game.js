@@ -115,7 +115,7 @@ function Game(options) {
                 //проверка на тип
                 if (data.player.type === "thief") {
                     setImg("thief");
-                    player = new Thief({ data: data, server: server, callbacks: { startGettingStatus: startGettingStatus, changeType: changeType } });
+                    player = new Thief({ data: data, server: server, callbacks: { startGettingStatus: startGettingStatus, startGettingRoom: startGettingRoom, changeType: changeType } });
                 }
                 if (data.player.type === "cop") {
                     setImg("cop");
@@ -131,7 +131,8 @@ function Game(options) {
                 $("#bodytbl").append(row);//заполняем "статбар" игрока
                 exitHandler(data.player.type);//обработчик выхода
                 intervalStatus = setInterval(getStatus, 3000);
-                intervalRoom = setInterval(getRoom, 3000, data.player.id_room);
+                intervalRoom = setInterval(getRoom, 3000, player.id_room);
+                
             }
         });
     }
@@ -178,6 +179,9 @@ function Game(options) {
 
     function startGettingStatus() {
         intervalStatus = setInterval(getStatus, 3000);
+    }
+    function startGettingRoom(id_room) {
+        intervalRoom = setInterval(getRoom, 3000, id_room);
     }
     
     function getStatus() {

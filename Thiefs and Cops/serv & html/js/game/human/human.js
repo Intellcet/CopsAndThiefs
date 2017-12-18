@@ -29,9 +29,9 @@
         if (id_room) {
             server.getRoom(id_room).done(function (data) {
                 if (data) {
+                    console.log(data);
                     $("#room").empty();//чистим содержимое комнаты
                     $('#nameRoom').empty();
-                    player = data.player;
                     room = data.room;
                     var players = data.players;//игроки в комнате
                     var nicknames = data.nicknames;//их ники
@@ -74,8 +74,9 @@
                     $('#command').val("");
                     setTimeout(function () { $('#span').remove(); }, 2000);
                 }
-                getRoom(data.action.id_room);
-                getWays(data.action.id_room);
+                player = data.player;
+                getRoom(data.action.id);
+                getWays(data.action.id);
                 $('#command').val("");
             }
         });

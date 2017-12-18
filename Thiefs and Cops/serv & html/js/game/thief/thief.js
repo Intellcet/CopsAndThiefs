@@ -8,6 +8,7 @@
     var nickname = options.data.nickname;
 
     var startGettingStatus = (options && options.callbacks && options.callbacks.startGettingStatus instanceof Function) ? options.callbacks.startGettingStatus : function () { };
+    var startGettingRoom = (options && options.callbacks && options.callbacks.startGettingRoom instanceof Function) ? options.callbacks.startGettingRoom : function () { };
     var changeType = (options && options.callbacks && options.callbacks.changeType instanceof Function) ? options.callbacks.changeType : function () { };
 
     var span = "";
@@ -32,6 +33,7 @@
         if (id_room) {
             server.getRoom(id_room).done(function (data) {
                 if (data) {
+                    console.log(data);
                     $("#room").empty();//чистим содержимое комнаты
                     $('#nameRoom').empty();
                     room = data.room;
@@ -76,10 +78,9 @@
                     $('#command').val("");
                     setTimeout(function () { $('#span').remove(); }, 2000);
                 }
-                console.log(data);
                 player = data.player;
-                getRoom(data.action.id_room);
-                getWays(data.action.id_room);
+                getRoom(data.action.id);
+                getWays(data.action.id);
                 $('#command').val("");
             }
         });
