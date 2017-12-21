@@ -36,7 +36,7 @@
         }
 
         public function getUser($login, $password) {//получаем пользователя
-            $query = "SELECT * " . "FROM user " . "WHERE login='" . $login . "' AND password=" . $password . "";
+            $query = "SELECT * " . "FROM user " . "WHERE login='" . $login . "' AND password='" . $password . "'";
             $result = mysqli_query($this->host, $query);
             $res = null;
             while ($row = mysqli_fetch_object($result)) {

@@ -44,8 +44,8 @@
 		
 		// register user
         private function registerUserMethod($param) {
-		    if ($param['login'] && $param['pass'] && $param['nickname']) {
-		        return $this->auth->registerUser($param['login'], $param['pass'], $param['nickname']);
+		    if ($param['login'] && $param['pass'] && $param['nickname'] && $param['type']) {
+		        return $this->auth->registerUser($param['login'], $param['pass'], $param['nickname'], $param['type']);
             }
             return false;
         }

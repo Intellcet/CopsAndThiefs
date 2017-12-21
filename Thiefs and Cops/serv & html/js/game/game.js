@@ -127,7 +127,11 @@ function Game(options) {
                 }
                 getRoom(data.player.id_room);
                 getWays(data.player.id_room);
-                var row = "<tr><th>" + "nickname: " + data.nickname + "</th> <th>" + "type: " + data.player.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.player.exp + "</th> <th>" + "money: " + data.player.money + "</th> </tr>";
+                var type;
+                if (data.player.type === "thief") { type = "вор"; }
+                if (data.player.type === "cop") { type = "коп"; }
+                if (data.player.type === "human") { type = "чтите закон"; }
+                var row = "<tr><th>" + "Вас зовут: " + data.nickname + "</th> <th>" + "Вы " + type + " по жизни" + "</th> <th>" + "Ваш ранг: " + data.rang + "</th> <th>" + "Кол-во Вашего опыта: " + data.player.exp + "</th> <th>" + "Ваши деньги: " + data.player.money + "</th> </tr>";
                 $("#bodytbl").append(row);//заполняем "статбар" игрока
                 exitHandler(data.player.type);//обработчик выхода
                 intervalStatus = setInterval(getStatus, 3000);

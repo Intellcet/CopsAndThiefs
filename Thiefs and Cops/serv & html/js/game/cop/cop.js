@@ -24,8 +24,8 @@
 
     function fillStatBar(data) {
         $('#bodytbl').empty();
-        var row = "<tr><th>" + "nickname: " + data.nickname + "</th> <th>" + "type: " + data.player.type + "</th> <th>" + "rang: " + data.rang + "</th> <th>" + "exp: " + data.player.exp + "</th> <th>" + "money: " + data.player.money + "</th> </tr>";
-        $("#bodytbl").append(row);
+        var row = "<tr><th>" + "Вас зовут: " + data.nickname + "</th> <th>" + "Вы коп по жизни " + "</th> <th>" + "Ваш ранг: " + data.rang + "</th> <th>" + "Кол-во Вашего опыта: " + data.player.exp + "</th> <th>" + "Ваши деньги: " + data.player.money + "</th> </tr>";
+        $('#bodytbl').append(row);
     }
 
     function getRoom(id_room) {//получить данные о комнате

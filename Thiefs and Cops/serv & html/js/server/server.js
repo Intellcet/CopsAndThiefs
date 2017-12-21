@@ -25,8 +25,8 @@
     this.logout = function () {
         return getData({ method: 'logout', token: token });
     };
-    this.registration = function (login, pass, nickname) {
-        return getData({ method: 'registerUser', login: login, pass: pass, nickname: nickname});
+    this.registration = function (login, pass, nickname, type) {
+        return getData({ method: 'registerUser', login: login, pass: pass, nickname: nickname, type: type });
     };
     this.startGame = function () {
         return getData({ method: 'startGame', token: token });
