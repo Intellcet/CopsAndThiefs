@@ -76,7 +76,7 @@
 
         public function setUser($login, $password, $nickname) {//добавляем в бд пользователя
             if ($this->isUniqUser($nickname)) {//если пользователь уникален (проверка по нику)
-                $query = "INSERT INTO user (login, password, nickname) VALUES ('" . $login . "', " . $password . ", '" . $nickname . "')";
+                $query = "INSERT INTO user (login, password, nickname) VALUES ('" . $login . "', '" . $password . "', '" . $nickname . "')";
                 mysqli_query($this->host, $query);
                 return true;
             }
