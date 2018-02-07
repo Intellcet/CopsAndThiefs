@@ -1,4 +1,5 @@
 ﻿function Timer() {
+
     var interval;
     var count = 0;
 
@@ -33,6 +34,7 @@ function Game(options) {
 
     var player;
     var nickname;
+    var type;
     var room;
     var intervalStatus;
     var intervalRoom;
@@ -71,13 +73,15 @@ function Game(options) {
     }
 
     function getRoom(id_room) {//получить данные о комнате
-        if(id_room) {
+        if (id_room) {
             server.getRoom(id_room).done(function (data) {
-                if(data) {
-                    $("#room").empty();//чистим содержимое комнаты
+                if (data) {
+                    room = null;
+                    $("#room").empty();    //чистим содержимое комнаты
                     $("#nameRoom").empty();
                     room = data.room;
                     var players = data.players;//игроки в комнате
+                    console.log(players);
                     var nicknames = data.nicknames;//их ники
                     var span = "<span class='span'>" + "&nbsp" + room.name + ":" + "</span>";
                     $('#nameRoom').append(span);//выводим название комнаты
@@ -125,9 +129,6 @@ function Game(options) {
                     setImg("human");
                     player = new Human({ data: data, server: server, callbacks: { changeType: changeType } });
                 }
-                getRoom(data.player.id_room);
-                getWays(data.player.id_room);
-                var type;
                 if (data.player.type === "thief") { type = "вор"; }
                 if (data.player.type === "cop") { type = "коп"; }
                 if (data.player.type === "human") { type = "чтите закон"; }
@@ -135,8 +136,6 @@ function Game(options) {
                 $("#bodytbl").append(row);//заполняем "статбар" игрока
                 exitHandler(data.player.type);//обработчик выхода
                 intervalStatus = setInterval(getStatus, 3000);
-                intervalRoom = setInterval(getRoom, 3000, player.id_room);
-                
             }
         });
     }
@@ -146,7 +145,7 @@ function Game(options) {
         $('#command').val("");
         $('#bodytbl').empty();
         clearInterval(intervalStatus);
-        clearInterval(intervalRoom);
+        clearInterval(player.getIntervalRoom());
     }
 
     function exitHandler(type) {//обработчик выхода
@@ -192,14 +191,7 @@ function Game(options) {
         server.getStatus().done(function (data) {
             if (data) {
                 if (player.getType() === "thief") {
-                    console.log(data);
-                    if (data === "жопят") {
-                        player.getStatus(data);
-                        clearInterval(intervalStatus);
-                        return;
-                    } else {
-                        player.getStatus(data);
-                    }
+                    player.getStatus(data);
                 }
                 if (player.getType() === "cop") {
                     player.getStatus(data);
@@ -212,11 +204,16 @@ function Game(options) {
     }
 
     function changeType(type) {
+        if (type === 'cop' || type === 'коп') {
+            type = 'cop';
+        } else if (type === 'thief' || type === 'вор') {
+            type = 'thief';
+        }
         off(player.getType());
-        clearInterval(intervalStatus);
         server.action("changeType", null, null, null, (type) ? type : null).done(function (data) {
             if (data.action) {
-                clearInterval(intervalRoom);
+                clearInterval(player.getIntervalRoom());
+                clearInterval(intervalStatus);
                 startGame();
             }
         });

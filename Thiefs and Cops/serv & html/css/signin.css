@@ -12,7 +12,7 @@ body {
 }
 
 #registrationSpan:hover {
-    background-color: #C0C0C0;
+    color: black;
 }
 
 .form-login {
@@ -41,6 +41,7 @@ h4 {
 .wrapper {
     text-align: center;
 }
+
 #signInSpan:hover {
-    background-color: #C0C0C0;
+    color: black;
 }

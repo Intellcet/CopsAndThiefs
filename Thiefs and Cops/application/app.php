@@ -69,6 +69,7 @@
             if ($param['token']) {
                 return $this->game->getStatus($param['token']);
             }
+            return false;
         }
 		// get room info
         private function getRoomInfoMethod($param){
@@ -110,12 +111,13 @@
             if ($param['token']) {
                 return $this->game->action($param['token'], $param['action'], $param['money'], $param['nickname'], $param['name_room'], $param['type']);
             }
+            return false;
         }
 
         function __construct() {
             $this->db = new DB();
             $this->auth = new Auth($this->db);
-            $this->game = new Data($this->db);
+            $this->game = new Game($this->db);
 			$this->chat = new Chat($this->db);
         }
     }

@@ -3,60 +3,75 @@
 <html>
 <head>
     <title>Cops & Thiefs</title>
+
     <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="css/gamepage.css" rel="stylesheet" type="text/css" />
     <link href="css/signin.css" rel="stylesheet" type="text/css" />
 
-    <script src="js/vendor/jquery-3.2.1.js" type="text/javascript"></script>
+    <script src="js/vendor/jquery-3.2.1.min.js"></script>
     <script src="js/vendor/bootstrap.min.js" type="text/javascript"></script>
-    <script src="js/vendor/md5.min.js"></script>
+    <script src="js/vendor/md5.min.js" type="text/javascript"></script>
+
     <script src="js/server/server.js" type="text/javascript"></script>
+
     <script src="js/auth/auth.js" type="text/javascript"></script>
-    <script src="js/game/game.js" type="text/javascript"></script>
-    <script src="js/game/cop/cop.js"></script>
-    <script src="js/game/human/human.js"></script>
-    <script src="js/game/thief/thief.js"></script>
     <script src="js/chat/chat.js" type="text/javascript"></script>
+
+    <script src="js/game/game.js" type="text/javascript"></script>
+    <script src="js/game/cop/cop.js" type="text/javascript"></script>
+    <script src="js/game/human/human.js" type="text/javascript"></script>
+    <script src="js/game/thief/thief.js" ></script>
+
     <script src="js/main.js" type="text/javascript"></script>
+
 </head>
 <body>
     <div id="validation" class="container">
+
         <div class="row">
             <div class="col-md-offset-5 col-md-3">
                 <div class="form-login">
                     <h4>Вход</h4>
-                    <input type="name" id="login" class="form-control input-sm chat-input" placeholder="login" required autofocus /> <br />
-                    <input type="password" id="pass" class="form-control input-sm chat-input" placeholder="password" required /> <br />
+                    <input type="name" id="login" class="form-control input-sm chat-input" placeholder="Логин" required autofocus /> <br />
+                    <input type="password" id="pass" class="form-control input-sm chat-input" placeholder="Пароль" required /> <br />
                     <button id="signIn" class="btn btn-lg btn-secondary btn-block" style="margin-bottom:3px;">Войти</button>
-                    <span id="registrationSpan">зарегистрироваться?</span>
+                    <a id="registrationSpan">зарегистрироваться?</a>
                     <div class="wrapper" style="margin-top: 10px;"></div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <div id="registration" class="container">
+
         <div class="row">
             <div class="col-md-offset-5 col-md-3">
                 <div class="form-login">
                     <h4>Регистрация</h4>
-                    <input type="name" id="loginReg" class="form-control input-sm chat-input" placeholder="login" required autofocus /> <br />
-                    <input type="name" id="nickname" class="form-control input-sm chat-input" placeholder="nickname" required /> <br />
-                    <input type="password" id="passReg" class="form-control input-sm chat-input" placeholder="password" required /> <br />
-                    <input type="password" id="passAgain" class="form-control input-sm chat-input" placeholder="password again" required /> <br />
-                    <input id="type" class="form-control input-sm chat-input" placeholder="enter a type(thief/cop/human)" required /> <br />
+                    <input type="text" id="loginReg" class="form-control input-sm chat-input" placeholder="Логин" required autofocus /> <br />
+                    <input type="text" id="nickname" class="form-control input-sm chat-input" placeholder="Никнейм" required /> <br />
+                    <input type="password" id="passReg" class="form-control input-sm chat-input" placeholder="Пароль" required /> <br />
+                    <input type="password" id="passAgain" class="form-control input-sm chat-input" placeholder="Повторите пароль" required /> <br />
+                    <select id="type" class="form-control input-sm chat-input" placeholder="enter a type(thief/cop/human)" required >
+                        <option value="thief">Вор</option>
+                        <option value="cop">Коп</option>
+                        <option value="human">Человек</option>
+                    </select> <br />
                     <button id="registrationBtn" class="btn btn-lg btn-secondary btn-block" style="margin-bottom:3px;">Зарегистрироваться</button>
-                    <span id="signInSpan">Есть аккаунт? Войти</span>
+                    <a id="signInSpan">Есть аккаунт? Войти</a>
                     <div class="wrapper" style="margin-top: 10px;"></div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <div id="gamePage">
+
         <div class="col-md-4 firstFlex">
             <div class="WhoInRoom firstFlexBlocks">
-                <div class=" panel panel-default radThings typeSwitch">
+                <div class="panel panel-default radThings typeSwitch">
                     <div class="panel-heading radThings">
                         <span class="panel-title">Кто в комнате</span>
                         <span id="nameRoom" class="panel-title"></span>
@@ -110,6 +125,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </body>
 </html>

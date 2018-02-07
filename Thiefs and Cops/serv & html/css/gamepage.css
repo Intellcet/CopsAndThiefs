@@ -8,7 +8,6 @@ html {
     height: 100%;
 }
 
-
 .WhoInRoom
 {
     text-align:left;
@@ -45,8 +44,6 @@ html {
     height: 60%;
 }
 
-
-
 #letters
 {
     text-align:left;
@@ -72,6 +69,10 @@ html {
     border-radius: 10px;
 }
 
+#screen {
+    overflow: auto;
+}
+
 .screen
 {
     background-color:#aaa;
@@ -89,6 +90,7 @@ html {
     padding: 10px;
     margin-left: 5px;
 }
+
 #command
 {
 
@@ -99,12 +101,14 @@ html {
 #cmndbtn {
     margin-top: 10px;
 }
+
 #statBar
 {
     background-color:#aaa;
     height: 30px;
     border-radius: 10px;
 }
+
 #actions
 {
     overflow: hidden;
@@ -134,8 +138,6 @@ html {
 #gameHeader {
     margin: 0px;
 }
-
-
 
 #statBar {
     margin-left: 5px;

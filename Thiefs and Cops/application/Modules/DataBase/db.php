@@ -14,7 +14,7 @@
 			// подключить БД
             $this->host = mysqli_connect($this->url, $this->user, $this->password);
             if (!$this->host) {
-                die('Ошибка соединения: ' . mysqli_error());
+                die('Ошибка соединения: ' . mysqli_error($this->host));
             }
             $this->db = mysqli_select_db($this->host, $this->dbName);
 		}
@@ -23,8 +23,8 @@
             mysqli_close($this->host);
         }
 
-        private function isUniqUser($nickname) {//проверка уникальности пользователя по логину
-            $query = "SELECT * " . "FROM user " . "WHERE nickname='" . $nickname . "'";
+        private function isUniqUser($nickname, $login) {//проверка уникальности пользователя по логину
+            $query = "SELECT * " . "FROM user " . "WHERE nickname='" . $nickname . "' AND login ='" . $login ."'";
             $result = mysqli_query($this->host, $query);
             $res = null;
             while ($row = mysqli_fetch_object($result)) {
@@ -56,6 +56,17 @@
             }
             return $res;
         }
+
+        public function getUserByIdPlayer($id){
+            $query = "SELECT nickname FROM player, user WHERE player.id_user=user.id AND player.id =" . $id;
+            $result = mysqli_query($this->host, $query);
+            $res = null;
+            while ($row = mysqli_fetch_object($result)) {
+                $res = $row;
+                break;
+            }
+            return $res;
+        }
 		
 		public function getUserByToken($token) {
             $query = "SELECT * " . "FROM user " . "WHERE token='" . $token . "'";
@@ -75,7 +86,7 @@
         }
 
         public function setUser($login, $password, $nickname) {//добавляем в бд пользователя
-            if ($this->isUniqUser($nickname)) {//если пользователь уникален (проверка по нику)
+            if ($this->isUniqUser($nickname, $login)) {//если пользователь уникален (проверка по нику + логину)
                 $query = "INSERT INTO user (login, password, nickname) VALUES ('" . $login . "', '" . $password . "', '" . $nickname . "')";
                 mysqli_query($this->host, $query);
                 return true;
@@ -264,7 +275,7 @@
 
         public function setPlayer($id_user, $type, $status = 'alive', $live = 1){//добавляем нового игрока
             if ($id_user && $type) {
-                $query = "INSERT INTO player (id_user, type, status, live) VALUES (" . $id_user . ", '" . $type . "', '" . $status . "', '" . $live . "')";
+                $query = "INSERT INTO player (id_user, type, status, live, rang, exp, money) VALUES (" . $id_user . ", '" . $type . "', '" . $status . "', '" . $live . "', 1, 1, 1)";
                 mysqli_query($this->host, $query);
                 return true;
             }
@@ -297,7 +308,7 @@
 
         public function setRang($id, $rang){//обновляем ранг игрока
             if ($id) {
-                $query = "UPDATE player SET rang='". $rang ."' WHERE id=". $id ."";
+                $query = "UPDATE player SET rang='". $rang ."' WHERE id=". $id;
                 mysqli_query($this->host, $query);
                 return true;
             }

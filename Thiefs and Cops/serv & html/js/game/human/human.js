@@ -8,6 +8,8 @@
 
     var changeType = (options && options.callbacks && options.callbacks.changeType instanceof Function) ? options.callbacks.changeType : function () { };
 
+    var intervalRoom;
+
     var span = "";
 
     function createButtons() {
@@ -23,27 +25,6 @@
         $('#bodytbl').empty();
         var row = "<tr><th>" + "Вас зовут: " + data.nickname + "</th> <th>" + "Вы чтите закон по жизни " + "</th> <th>" + "Ваш ранг: " + data.rang + "</th> <th>" + "Кол-во Вашего опыта: " + data.player.exp + "</th> <th>" + "Ваши деньги: " + data.player.money + "</th> </tr>";
         $("#bodytbl").append(row);
-    }
-
-    function getRoom(id_room) {//получить данные о комнате
-        if (id_room) {
-            server.getRoom(id_room).done(function (data) {
-                if (data) {
-                    console.log(data);
-                    $("#room").empty();//чистим содержимое комнаты
-                    $('#nameRoom').empty();
-                    room = data.room;
-                    var players = data.players;//игроки в комнате
-                    var nicknames = data.nicknames;//их ники
-                    span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
-                    $('#nameRoom').append(span);//выводим название комнаты
-                    for (var i = 0; i < nicknames.length; i++) {
-                        var elem = '<p style="margin-bottom: 5px;">' + nicknames[i] + '</p>';
-                        $("#room").append(elem);//выводим ники игроков на экран
-                    }
-                }
-            });
-        }
     }
 
     function getWays(id_room) {
@@ -64,20 +45,38 @@
         }
     }
 
+    function getRoom(id_room) {//получить данные о комнате
+        if (id_room) {
+            server.getRoom(id_room).done(function (data) {
+                if (data) {
+                    $("#room").empty();//чистим содержимое комнаты
+                    $('#nameRoom').empty();
+                    room = data.room;
+                    var players = data.players;//игроки в комнате
+                    var nicknames = data.nicknames;//их ники
+                    span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
+                    $('#nameRoom').append(span);//выводим название комнаты
+                    for (var i = 0; i < nicknames.length; i++) {
+                        var elem = '<p style="margin-bottom: 5px;">' + nicknames[i] + '</p>';
+                        $("#room").append(elem);//выводим ники игроков на экран
+                    }
+                    getWays(id_room);
+                }
+            });
+        }
+    }
+
     function toRoom() {//двигаемся в другую комнату
         var name_room = $('#command').val();//получаем значение с командной строки, куда двигаться
         server.action('toRoom', null, null, name_room).done(function (data) {
-            if (data) {
-                if (typeof (data) === 'string') {
-                    span = "<span id='span'>" + data + "</span>";
-                    $('#screen').append(span);
-                    $('#command').val("");
-                    setTimeout(function () { $('#span').remove(); }, 2000);
-                }
-                player = data.player;
+            if (data && data.action) {
                 getRoom(data.action.id);
-                getWays(data.action.id);
+                player = data.player;
                 $('#command').val("");
+            } else {
+                span = "<span class='span'>Пути в данную комнату из этой комнаты не существует! </span><br class='span' />";
+                $('#screen').append(span);
+                setTimeout(function () { $('.span').remove(); }, 2000);
             }
         });
     }
@@ -86,34 +85,34 @@
         server.action('suffer', null, null).done(function (data) {
             if (data) {
                 if (typeof (data) === 'string') {
-                    span = "<span id='span'>" + data + "</span>";
-                    $('#screen').append(span);
-                    $('#command').val("");
-                    setTimeout(function () { $('#span').remove(); }, 2000);
+                    span = "<span class='span'>" + data + "</span><br class='span' />";
                 }
                 if (typeof (data.action) === 'object') {
                     if (data.action.money <= 2000) {
                         fillStatBar(data);
+                        return;
                     }
                 }
                 if (typeof (data.action) === 'string') {
-                    span = "<span id='span'>" + data.action + "</span>";
-                    $('#screen').append(span);
+                    span = "<span class='span'>" + data.action + "</span><br class='span' />";
                     changeClass();
-                    setTimeout(function () { $('#span').remove(); }, 2000);
                 }
+                $('#screen').append(span);
+                $('#command').val("");
+                setTimeout(function () { $('.span').remove(); }, 2000);
             }
         });
     }
 
     function change() {
         type = $('#command').val();
-        if (type) {
+        type.toLowerCase();
+        if (type && (type === 'cop' || type === 'thief' || type === 'коп' || type === 'вор')) {
             changeType(type);
         } else {
-            span = "<span id='span'>" + "Введите тип!" + "</span>";
+            span = "<span class='span'>" + "Введите тип!" + "</span><br class='span' />";
             $('#screen').append(span);
-            setTimeout(function () { $('#span').remove(); }, 2000);
+            setTimeout(function () { $('.span').remove(); }, 2000);
         }
     }
 
@@ -140,6 +139,9 @@
     }
 
     function init() {
+        intervalRoom = setInterval(function () {
+            getRoom(player.id_room);
+        }, 3000);
         createButtons();
         if (player.status === "терпите") {
             normal();
@@ -154,11 +156,15 @@
         return player.type;
     };
 
+    this.getIntervalRoom = function () {
+        return intervalRoom;
+    };
+
     this.getStatus = function (data) {
         if (data === "жопят") {
-            span = "<span id='span'>" + "Вас жопят!" + "</span>";
+            span = "<span class='span'>" + "Вас жопят!" + "</span><br class='span' />";
             $('#screen').append(span);
-            setTimeout(function () { $('#span').remove(); }, 2000);
+            setTimeout(function () { $('.span').remove(); }, 2000);
             return;
         }
     };

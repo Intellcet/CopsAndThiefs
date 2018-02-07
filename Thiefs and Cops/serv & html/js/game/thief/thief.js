@@ -3,13 +3,14 @@
     var server = options.server;
     var timer = new Timer();
 
+
     var player = options.data.player;
     var rang = options.data.rang;
     var nickname = options.data.nickname;
 
-    var startGettingStatus = (options && options.callbacks && options.callbacks.startGettingStatus instanceof Function) ? options.callbacks.startGettingStatus : function () { };
-    var startGettingRoom = (options && options.callbacks && options.callbacks.startGettingRoom instanceof Function) ? options.callbacks.startGettingRoom : function () { };
     var changeType = (options && options.callbacks && options.callbacks.changeType instanceof Function) ? options.callbacks.changeType : function () { };
+
+    var intervalRoom;
 
     var span = "";
 
@@ -27,27 +28,6 @@
         $('#bodytbl').empty();
         var row = "<tr><th>" + "Вас зовут: " + data.nickname + "</th> <th>" + "Вы вор по жизни" + "</th> <th>" + "Ваш ранг: " + data.rang + "</th> <th>" + "Кол-во Вашего опыта: " + data.player.exp + "</th> <th>" + "Ваши деньги: " + data.player.money + "</th> </tr>";
         $("#bodytbl").append(row);
-    }
-
-    function getRoom(id_room) {//получить данные о комнате
-        if (id_room) {
-            server.getRoom(id_room).done(function (data) {
-                if (data) {
-                    console.log(data);
-                    $("#room").empty();//чистим содержимое комнаты
-                    $('#nameRoom').empty();
-                    room = data.room;
-                    var players = data.players;//игроки в комнате
-                    var nicknames = data.nicknames;//их ники
-                    span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
-                    $('#nameRoom').append(span);//выводим название комнаты
-                    for (var i = 0; i < nicknames.length; i++) {
-                        var elem = '<p style="margin-bottom: 5px;">' + nicknames[i] + '</p>';
-                        $("#room").append(elem);//выводим ники игроков на экран
-                    }
-                }
-            });
-        }
     }
 
     function getWays(id_room) {
@@ -68,102 +48,98 @@
         }
     }
 
+    function getRoom(id_room) {//получить данные о комнате
+        if (id_room) {
+            server.getRoom(id_room).done(function (data) {
+                if (data) {
+                    $("#room").empty();//чистим содержимое комнаты
+                    $('#nameRoom').empty();
+                    room = data.room;
+                    var players = data.players;//игроки в комнате
+                    var nicknames = data.nicknames;//их ники
+                    span = "<span class='spanConst'>" + "&nbsp" + room.name + ":" + "</span>";
+                    $('#nameRoom').append(span);//выводим название комнаты
+                    for (var i = 0; i < nicknames.length; i++) {
+                        var elem = '<p style="margin-bottom: 5px;">' + nicknames[i] + '</p>';
+                        $("#room").append(elem);//выводим ники игроков на экран
+                    }
+                }
+                getWays(id_room);
+            });
+        }
+    }
+
     function toRoom() {//двигаемся в другую комнату
         var name_room = $('#command').val();//получаем значение с командной строки, куда двигаться
         server.action('toRoom', null, null, name_room).done(function (data) {
-            if (data) {
-                if (typeof (data) === 'string') {
-                    span = "<span id='span'>" + data + "</span>";
-                    $('#screen').append(span);
-                    $('#command').val("");
-                    setTimeout(function () { $('#span').remove(); }, 2000);
-                }
-                player = data.player;
+            if (data && data.action) {
                 getRoom(data.action.id);
-                getWays(data.action.id);
+                player = data.player;
                 $('#command').val("");
+            } else {
+                span = "<span class='span'>Пути в данную комнату из этой комнаты не существует! </span><br class='span' />";
+                $('#screen').append(span);
+                setTimeout(function () { $('.span').remove(); }, 2000);
             }
         });
     }
 
     function giveMoney() {//отдаем деньги
         var money = $('#command').val() - 0;
-        if (!isNaN(money)) {
+        if (!isNaN(money) && money >= 0) {
             server.action('giveaway', money).done(function (data) {
                 if (data) {
-                    if (typeof (data) === 'string') {
-                        span = "<span id='span'>" + data + "</span>";
+                    if (typeof (data) === 'string' || typeof (data.action) === 'string') {
+                        span = "<span class='span'>" + ((typeof (data) === 'string') ? data : data.action) + "</span><br class='span' />";
                         $('#screen').append(span);
-                        $('#command').val("");
-                        setTimeout(function () { $('#span').remove(); }, 2000);
-                    }
-                    if (typeof (data.action) === 'string') {
-                        span = "<span id='span'>" + data.action + "</span>";
-                        $('#screen').append(span);
-                        $('#command').val("");
-                        setTimeout(function () { $('#span').remove(); }, 2000);
                     }
                     if (typeof (data.action) === 'object') {
                         fillStatBar(data);
-                        $('#command').val("");
                     }
                 }
             });
         } else {
-            span = "<span id='span'>" + "Вы ввели не числовое значение!" + "</span>";
+            span = "<span class='span'>" + "Вы ввели не корректное значение!" + "</span><br class='span' />";
             $('#screen').append(span);
-            $('#command').val("");
-            setTimeout(function () { $('#span').remove(); }, 2000);
         }
+        setTimeout(function () { $('.span').remove(); }, 2000);
+        $('#command').val("");
     }
 
     function search() {//обыскиваем комнату
         server.action('search').done(function (data) {
             if (data) {
-                if (typeof (data) === 'string') {
-                    span = "<span id='span'>" + data + "</span>";
+                if (typeof (data) === 'string' || typeof (data.action) === 'string') {
+                    span = "<span class='span'>" + data + "</span><br class='span' />";
                     $('#screen').append(span);
-                    $('#command').val("");
-                    setTimeout(function () { $('#span').remove(); }, 2000);
-                }
-                if (typeof (data.action) === 'string') {
-                    span = "<span id='span'>" + data.action + "</span>";
-                    $('#screen').append(span);
-                    $('#command').val("");
-                    setTimeout(function () { $('#span').remove(); }, 2000);
+                    setTimeout(function () { $('.span').remove(); }, 2000);
                 }
                 if (typeof (data.action) === 'object') {
                     fillStatBar(data);
-                    $('#command').val("");
                     player = data.player;
                 }
+                $('#command').val("");
             }
         });
     }
 
     function steal() {//крадем деньги
-        var nickname = $('#command').val();
-        server.action('steal', null, nickname).done(function (data) {
-            if (data) {
-                if (typeof (data) === 'string') {
-                    span = "<span id='span'>" + data + "</span>";
-                    $('#screen').append(span);
-                    $('#command').val("");
-                    setTimeout(function () { $('#span').remove(); }, 2000);
+        var target = $('#command').val();
+        if (target != "") {
+            server.action('steal', null, target).done(function (data) {
+                if (data) {
+                    if (typeof (data) === 'string' || typeof (data.action) === 'string') {
+                        span = "<span class='span'>" + data.action + "</span><br class='span' />";
+                        $('#screen').append(span);
+                        setTimeout(function () { $('.span').remove(); }, 2000);
+                    }
+                    if (typeof (data.action) === 'object') {
+                        fillStatBar(data);
+                        player = data.player;
+                    }
                 }
-                if (typeof (data.action) === 'string') {
-                    span = "<span id='span'>" + data.action + "</span>";
-                    $('#screen').append(span);
-                    $('#command').val("");
-                    setTimeout(function () { $('#span').remove(); }, 2000);
-                }
-                if (typeof (data.action) === 'object') {
-                    fillStatBar(data);
-                    $('#command').val("");
-                    player = data.player;
-                }
-            }
-        });
+            });
+        }
     }
 
     function lawyer() {//вызываем адвоката
@@ -171,24 +147,17 @@
         if (!isNaN(money)) {
             server.action('lawyer', money).done(function (data) {
                 if (data) {
-                    if (typeof (data) === 'string') {
+                    if (typeof (data) === 'string' || typeof (data.action) === 'string') {
                         span = "<span id='span'>" + data + "</span>";
                         $('#screen').append(span);
-                        $('#command').val("");
-                        setTimeout(function () { $('#span').remove(); }, 2000);
-                    }
-                    $('#command').val('');
-                    if (typeof (data.action) === 'string') {
-                        span = "<span id='span'>" + data.action + "</span>";
-                        $('#screen').append(span);
-                        setTimeout(function () { $('#span').remove(); }, 2000);
                     } else {
-                        span = "<span id='span'>" + "Вы успешно увеличили уровень адвоката" + "</span>";
+                        span = "<span class='span'>" + "Вы успешно увеличили уровень адвоката" + "</span><br class='span' />";
                         $('#screen').append(span);
                         fillStatBar(data);
-                        setTimeout(function () { $('#span').remove(); }, 2000);
                         player = data.player;
                     }
+                    $('#command').val('');
+                    setTimeout(function () { $('.span').remove(); }, 2000);
                 }
             });
         }
@@ -198,17 +167,16 @@
         server.action('toKnowResultThief').done(function (data) {
             if (data) {
                 if (player.exp < data.player.exp) {
-                    span = "<span id='span'>" + "Вас не смогли пожопить!" + "</span>";
+                    span = "<span class='span'>" + "Вас не смогли пожопить!" + "</span><br class='span' />";
                     $('#screen').append(span);
-                    fillStatBar(data);
-                    setTimeout(function () { $('#span').remove(); }, 2000);
                 }
                 if (player.exp >= data.player.exp) {
-                    span = "<span id='span'>" + "Вас пожопили!" + "</span>";
+                    span = "<span class='span'>" + "Вас пожопили!" + "</span><br class='span' />";
                     $('#screen').append(span);
-                    fillStatBar(data);
-                    setTimeout(function () { $('#span').remove(); }, 2000);
                 }
+                fillStatBar(data);
+                player = data.player;
+                setTimeout(function () { $('.span').remove(); }, 2000);
             }
         });
     }
@@ -239,12 +207,19 @@
     }
 
     function init() {
+        intervalRoom = setInterval(function () {
+            getRoom(player.id_room);
+        }, 3000);
         createButtons();
         actionsHundler();
     }
 
     this.getType = function () {
         return player.type;
+    };
+
+    this.getIntervalRoom = function () {
+        return intervalRoom;
     };
 
     this.getStatus = function (data) {
@@ -259,7 +234,6 @@
                 $('#listSec').remove();
                 $('#command').val("");
                 toKnowResultThief();
-                startGettingStatus();
             });
             return;
         }

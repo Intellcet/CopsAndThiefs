@@ -1,7 +1,7 @@
 <?php
     require_once(MODULES . 'baseModule.php');
 
-    class Data extends BaseModule{
+    class Game extends BaseModule{
 
         private $TYPE = Array(
             'cop' => Array(
@@ -55,7 +55,7 @@
             if ($exp <= 20000)  {	return 5;   }
             if ($exp <= 40000)  {	return 6;   }
             if ($exp <= 80000)  {	return 7;   }
-            if ($exp >= 120000) {	return 8;   }
+            if ($exp > 80000)   {	return 8;   }
         }
 
         private function setRangHuman($money){
@@ -65,7 +65,7 @@
             if ($money <= 1000) {   return 4;   }
             if ($money <= 1250) {   return 5;   }
             if ($money <= 1500) {   return 6;   }
-            if ($money <= 1750) {   return 7;   }
+            if ($money < 2000)  {   return 7;   }
             if ($money >= 2000) {   return 8;   }
         }
 
@@ -90,7 +90,7 @@
 
         private function steal ($param) {//украсть деньги у игрока(!!!)
             if ($param['player']->status != "жопит" || $param['player']->status != "жопят") {
-                if ($param['nickname']) {
+                if ($param['nickname'] && $param['nickname'] != $param['user']->nickname) {
                     $victim = $this->db->getPlayerByNickname($param['nickname']);
                     if ($victim) {
                         if ($victim->type === 'thief' || $victim->type === 'human') {
@@ -101,15 +101,16 @@
                             $this->db->setMoney($victim->id, $victimMoney);
                             $this->db->setMoney($param['player']->id, $param['player']->money);
                             $this->db->setExp($param['player']->id, $exp);
-                            $this->db-setRang($param['player']->id, $this->setRang($exp));
+                            $this->db->setRang($param['player']->id, $this->setRang($exp));
                             return $this->db->getPlayer($param['user']->id);
-                        } else {
+                        }
+                        if ($victim->type === 'cop') {
                             return "Прёшь против копа!!!";
                         }
                     }
                     return "Такого игрока не существует!";
                 }
-                return "Не ввёли ник игрока, которого хотите ограбить!";
+                return "Нельзя самого себя ограбить!";
             }
             return false;
         }
@@ -197,20 +198,20 @@
         }
 
         private function victimBetterCop($player, $victim) {//вспомогательная функция
-            $player->exp -= $victim->exp * 0.1;
-            $victim->exp += $victim->exp * 0.1;
+            $player->exp -= (round($victim->exp * 0.1) < 1) ? 1 : round($victim->exp * 0.1);
+            $victim->exp += (round($victim->exp * 0.1) < 1) ? 1 : round($victim->exp * 0.1);
             if ($player->exp >= 0) {
                 $this->db->setExp($player->id, $player->exp);
                 $this->db->setStatus($player->id, "alive");
             } else {
-                $this->db->setExp($player->id, 0);
+                $this->db->setExp($player->id, 1);
                 $this->db->setStatus($player->id, "терпите");
             }
             $this->db->setExp($victim->id, $victim->exp);
             $this->db->setRang($player->id, $this->setRang($player->exp));
             $this->db->setRang($victim->id, $this->setRang($victim->exp));
-            $victim->money += round($player->money / 5);
-            $player->money -= round($player->money / 5);
+            $victim->money += (round($victim->money / 5) < 1) ? 1 : round($victim->money / 5);
+            $player->money -= (round($victim->money / 5) < 1) ? 1 : round($victim->money / 5);
             $this->db->setMoney($victim->id, $victim->money);
             $this->db->setMoney($player->id, $player->money);
             $this->db->setStatus($victim->id, "alive");
@@ -223,20 +224,20 @@
         }
 
         private function victimLessCop($player, $victim) {//вспомогательная функция
-            $player->exp += $victim->exp * 0.1;
-            $victim->exp -= $victim->exp * 0.1;
-            if ($victim->exp >= 0) {
+            $player->exp += (round($victim->exp * 0.1) < 1) ? 1 : round($victim->exp * 0.1);
+            $victim->exp -= (round($victim->exp * 0.1) < 1) ? 1 : round($victim->exp * 0.1);
+            if ($victim->exp > 0) {
                 $this->db->setExp($victim->id, $victim->exp);
                 $this->db->setStatus($victim->id, "alive");
             } else {
-                $this->db->setExp($victim->id, 0);
+                $this->db->setExp($victim->id, 1);
                 $this->db->setStatus($victim->id, "терпите");
             }
             $this->db->setExp($player->id, $player->exp);
             $this->db->setRang($player->id, $this->setRang($player->exp));
             $this->db->setRang($victim->id, $this->setRang($victim->exp));
-            $player->money += round($victim->money / 5);
-            $victim->money -= round($victim->money / 5);
+            $player->money += (round($victim->money / 5) < 1) ? 1 : round($victim->money / 5);
+            $victim->money -= (round($victim->money / 5) < 1) ? 1 : round($victim->money / 5);
             $this->db->setMoney($player->id, $player->money);
             $this->db->setMoney($victim->id, $victim->money);
             $this->db->setStatus($player->id, "alive");
@@ -282,11 +283,12 @@
                 if($coin >= 90) {//если монетка, то ищем воров
                     for ($i = 0; $i < count($players); $i++) {
                         if ($players[$i]->type === "thief"){//если находим, выводим первого попавшегося
-                            return $this->db->getUserByID($players[$i]->id)->nickname;
+                            return $this->db->getUserByIdPlayer($players[$i]->id)->nickname;
                         }
                     }
                 }
-                $this->db->setMoney($param['player']->id, $coin);
+                $param['player']->money += $coin;
+                $this->db->setMoney($param['player']->id, $param['player']->money);
                 return true;
             }
         }
@@ -294,12 +296,12 @@
         private function suffer($param) {//страдать
             if ($param['player']->type === "human" && $param['player']->status === "терпите") {
                 $param['player']->money += 10;
-                if ($param['player']->money <= 1000){
+                if ($param['player']->money <= 2000){
                     $this->db->setMoney($param['player']->id, $param['player']->money);
                     return $param['player'];
                 }
                 $this->db->setStatus($param['player']->id, "смените тип");
-                return "Смените тип!";
+                return "Вы настрадались!";
             }
         }
 
@@ -320,6 +322,16 @@
                 $this->db->changePlayer($param['player']->id, "human");
                 $this->db->setStatus($param['player']->id, "терпите");
                 return true;
+            }
+            return false;
+        }
+
+        private function toRoom($param) {//переместиться в другую комнату
+            $room = $this->db->getRoomByName($param['name_room']);
+            $way = $this->db->getWay($param['player']->id_room, $room->id);
+            if ($way) {
+                $this->db->setPlayerToRoom($param['player']->id, $room->id);
+                return $room;
             }
             return false;
         }
@@ -394,16 +406,6 @@
                     $result->rooms = $this->db->getWays($room->id);
                 }
                 return $result;
-            }
-            return false;
-        }
-
-        public function toRoom($param) {//переместиться в другую комнату
-            $room = $this->db->getRoomByName($param['name_room']);
-            $way = $this->db->getWay($param['player']->id_room, $room->id);
-            if ($way) {
-                $this->db->setPlayerToRoom($param['player']->id, $room->id);
-                return $room;
             }
             return false;
         }
